@@ -24,6 +24,11 @@ class User {
   void SetPassword(const std::string& password);
   const bool CheckPassword(const std::string& password) const;
 
+  // This is method here because method GetPassword is protected
+  const bool CheckSingIn(const std::vector<User>& users,
+                         const std::string& login,
+                         const std::string& password) const;
+
  protected:
   const std::string& GetPassword() const;
 
@@ -36,6 +41,6 @@ class User {
   const bool checkNameUnique(const std::vector<User>& users,
                              const std::string& name) const;
   const bool checkLoginUnique(const std::vector<User>& users,
-                             const std::string& login) const;
+                              const std::string& login) const;
   const bool checkPasswordUnique(const std::string& password) const;
 };

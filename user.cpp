@@ -70,7 +70,7 @@ const bool User::checkNameUnique(const std::vector<User>& users,
 }
 
 const bool User::checkLoginUnique(const std::vector<User>& users,
-                                 const std::string& login) const {
+                                  const std::string& login) const {
   for (size_t i = 0; i < users.size(); ++i) {
     if (users[i].GetLogin() == login) {
       std::cout << "WARNING: User with login " << users[i].GetLogin()
@@ -82,7 +82,7 @@ const bool User::checkLoginUnique(const std::vector<User>& users,
   return true;
 }
 
-const bool User::checkPasswordUnique(const std::string& password) const{
+const bool User::checkPasswordUnique(const std::string& password) const {
   if (m_name == password) {
     std::cout << "WARNING: Password cannot include your name" << std::endl;
     return false;
@@ -94,4 +94,26 @@ const bool User::checkPasswordUnique(const std::string& password) const{
   }
 
   return true;
+}
+
+const bool User::CheckSingIn(const std::vector<User>& users,
+                             const std::string& login,
+                             const std::string& password) const {
+  if (users.empty()) {
+    return false;
+  }
+
+  if (!checkSpaces(login) || !checkSpaces(password)) {
+    return false;
+  }
+
+  for (size_t i = 0; i < users.size(); ++i) {
+    if ((users[i].GetName() == login || users[i].GetLogin() == login) &&
+        users[i].GetPassword() == password) {
+      return true;
+    }
+  }
+
+  std::cout << "WARNING: Incorrect name/login or password" << std::endl;
+  return false;
 }

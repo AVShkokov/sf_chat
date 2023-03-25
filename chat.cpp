@@ -14,13 +14,18 @@ const void Chat::Init() {
 
     switch (choice) {
       case '1': {
-		newUserMenu();
+        newUserMenu();
 
         break;
       }
 
       case '2': {
-        std::cout << std::endl << "Login" << std::endl;
+        User* user = new User();
+
+        const bool isOk = loginMenu(user);
+
+        delete user;
+
         break;
       }
 
@@ -71,11 +76,11 @@ const void Chat::newUserMenu() {
   std::cout << "Creating new user" << std::endl;
   std::cout << "_________________" << std::endl;
   std::cout << std::endl;
-  
+
   do {
     std::cout << "Enter name: ";
     std::getline(std::cin, name);
-	isOk = user.CheckName(m_users, name);
+    isOk = user.CheckName(m_users, name);
   } while (!isOk);
   user.SetName(name);
 
@@ -96,6 +101,34 @@ const void Chat::newUserMenu() {
   if (isOk) {
     m_users.push_back(std::move(user));
   }
-  
+
   std::cout << "User created successfully!" << std::endl;
+}
+
+const bool Chat::loginMenu(const User* user) {
+  bool isOk = false;
+
+  std::string login;
+  std::string password;
+
+  std::cin.ignore();  // clear buffer, because use mixed input
+
+  std::cout << std::endl;
+  std::cout << "Sing in to " << GetChatName() << std::endl;
+  std::cout << "__________________" << std::endl;
+  std::cout << std::endl;
+
+  do {
+    std::cout << "Enter your name or login: ";
+    std::getline(std::cin, login);
+
+    std::cout << "Enter your password: ";
+    std::getline(std::cin, password);
+
+    isOk = user->CheckSingIn(m_users, login, password);
+  } while (!isOk);
+
+  std::cout << "Sing in successfully!" << std::endl;
+
+  return true;
 }
