@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-const void Chat::Init() const {
+const void Chat::Init() {
   std::cout << "Welcone to " << GetChatName() << "!" << std::endl;
 
   char choice;
@@ -14,7 +14,10 @@ const void Chat::Init() const {
 
     switch (choice) {
       case '1': {
-        std::cout << std::endl << "Create new user" << std::endl;
+        std::cout << std::endl;
+        std::cout << "Creating new user " << std::endl;
+        newUserMenu();
+
         break;
       }
 
@@ -44,13 +47,53 @@ void Chat::SetChatName(std::string& chat_name) {
   m_chat_name = chat_name;
 }
 
-const void Chat::mainMenu() const {
-  std::cout << "___________________________" << std::endl;
+const void Chat::mainMenu() {
+  std::cout << "_________________________" << std::endl;
   std::cout << "Please choose an options:" << std::endl;
   std::cout << "(1) Sign up" << std::endl;
   std::cout << "(2) Sign in" << std::endl;
   std::cout << "(3) Exit" << std::endl;
-  std::cout << "___________________________" << std::endl;
+  std::cout << "_________________________" << std::endl;
   std::cout << std::endl;
   std::cout << "Enter your choice: ";
+}
+
+const void Chat::newUserMenu() {
+  User user;
+
+  bool isOk = false;
+
+  std::string name;
+  std::string login;
+  std::string password;
+
+  std::cin.ignore();  // clear buffer, because use mixed input
+
+  do {
+    std::cout << "Enter name: ";
+    std::getline(std::cin, name);
+	isOk = user.CheckName(m_users, name);
+  } while (!isOk);
+  user.SetName(name);
+
+  do {
+    std::cout << "Enter login: ";
+    std::getline(std::cin, login);
+    isOk = user.CheckLogin(m_users, login);
+  } while (!isOk);
+  user.SetLogin(login);
+
+  do {
+    std::cout << "Enter password: ";
+    std::getline(std::cin, password);
+    isOk = user.CheckPassword(password);
+  } while (!isOk);
+  user.SetPassword(password);
+
+  if (isOk) {
+    m_users.push_back(std::move(user));
+  }
+
+  std::cout << std::endl;
+  std::cout << "User created successfully!" << std::endl;
 }
