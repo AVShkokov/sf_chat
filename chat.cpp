@@ -14,9 +14,7 @@ const void Chat::Init() {
 
     switch (choice) {
       case '1': {
-        std::cout << std::endl;
-        std::cout << "Creating new user " << std::endl;
-        newUserMenu();
+		newUserMenu();
 
         break;
       }
@@ -48,7 +46,7 @@ void Chat::SetChatName(std::string& chat_name) {
 }
 
 const void Chat::mainMenu() {
-  std::cout << "_________________________" << std::endl;
+  std::cout << std::endl;
   std::cout << "Please choose an options:" << std::endl;
   std::cout << "(1) Sign up" << std::endl;
   std::cout << "(2) Sign in" << std::endl;
@@ -69,6 +67,11 @@ const void Chat::newUserMenu() {
 
   std::cin.ignore();  // clear buffer, because use mixed input
 
+  std::cout << std::endl;
+  std::cout << "Creating new user" << std::endl;
+  std::cout << "_________________" << std::endl;
+  std::cout << std::endl;
+  
   do {
     std::cout << "Enter name: ";
     std::getline(std::cin, name);
@@ -93,7 +96,6 @@ const void Chat::newUserMenu() {
   if (isOk) {
     m_users.push_back(std::move(user));
   }
-
-  std::cout << std::endl;
+  
   std::cout << "User created successfully!" << std::endl;
 }
