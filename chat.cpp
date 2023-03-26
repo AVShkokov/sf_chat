@@ -20,11 +20,11 @@ const void Chat::Init() {
       }
 
       case '2': {
-        User* user = new User();
+        User user;
 
-        const bool isOk = loginMenu(user);
-
-        delete user;
+        if (loginMenu(user)) {
+          createChat(user);
+        }
 
         break;
       }
@@ -105,7 +105,7 @@ const void Chat::newUserMenu() {
   std::cout << "User created successfully!" << std::endl;
 }
 
-const bool Chat::loginMenu(const User* user) {
+const bool Chat::loginMenu(User& user) {
   bool isOk = false;
 
   std::string login;
@@ -125,10 +125,38 @@ const bool Chat::loginMenu(const User* user) {
     std::cout << "Enter your password: ";
     std::getline(std::cin, password);
 
-    isOk = user->CheckSingIn(m_users, login, password);
+    isOk = user.CheckSingIn(m_users, login, password);
   } while (!isOk);
+
+  for (size_t i = 0; i < m_users.size(); ++i) {
+    if (m_users[i].GetName() == login || m_users[i].GetLogin() == login) {
+      user = m_users[i];
+    }
+  }
 
   std::cout << "Sing in successfully!" << std::endl;
 
   return true;
+}
+
+const void Chat::createChat(const User& user) {
+  bool isExit = false;
+
+  std::string message;
+
+  std::cout << std::endl;
+  std::cout << "Hello, " << user.GetName() << "!" << std::endl;
+  std::cout << "________________________________________" << std::endl;
+  std::cout << std::endl;
+  std::cout << "[SF_Chat]: " << user.GetName() << " online!" << std::endl;
+
+  while (!isExit) {
+    std::cout << "[" << user.GetName() << "]: ";
+    getline(std::cin, message);
+
+    if (message == "--exit") {
+      std::cout << "[SF_Chat]: " << user.GetName() << " offline!" << std::endl;
+      isExit = true;
+    }
+  }
 }
