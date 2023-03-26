@@ -24,5 +24,7 @@ class Chat {
 
   const void mainMenu();
   const void newUserMenu();
-  const bool loginMenu(const User* user);
+  const bool loginMenu(User& user);
+
+  const void createChat(const User& user);
 };
