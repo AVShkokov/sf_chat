@@ -1,6 +1,7 @@
 #pragma once
 
 #include "user.h"
+#include "message.h"
 
 #include <string>
 #include <vector>
@@ -20,11 +21,14 @@ class Chat {
  private:
   std::string m_chat_name;
 
-  std::vector<User> m_users;
+std::vector<User> m_users;
 
   const void mainMenu();
-  const void newUserMenu();
-  const bool loginMenu(User& user);
+  
+  const void singUp();
+  const bool singIn(User& user);
+  
+  const void loadHistory(const std::vector<std::string>& messages) const;
 
-  const void createChat(const User& user);
+  const void createChat(const User& user, Message* messages);
 };

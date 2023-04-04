@@ -108,12 +108,12 @@ const bool User::CheckSingIn(const std::vector<User>& users,
   }
 
   for (size_t i = 0; i < users.size(); ++i) {
-    if ((users[i].GetName() == login || users[i].GetLogin() == login) &&
+    if (users[i].GetLogin() == login &&
         users[i].GetPassword() == password) {
       return true;
     }
   }
 
-  std::cout << "WARNING: Incorrect name/login or password" << std::endl;
+  std::cout << "WARNING: Incorrect login or password" << std::endl;
   return false;
 }
