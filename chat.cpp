@@ -5,6 +5,8 @@
 const void Chat::Init() {
   std::cout << "Welcone to " << GetChatName() << "!" << std::endl;
 
+  Message* messages = new Message();
+  
   char choice;
 
   do {
@@ -14,7 +16,7 @@ const void Chat::Init() {
 
     switch (choice) {
       case '1': {
-        newUserMenu();
+        singUp();
 
         break;
       }
@@ -22,14 +24,15 @@ const void Chat::Init() {
       case '2': {
         User user;
 
-        if (loginMenu(user)) {
-          createChat(user);
+        if (singIn(user)) {
+          createChat(user, messages);
         }
 
         break;
       }
 
       case '3': {
+      	delete messages;
         std::cout << std::endl << "Goodbye!" << std::endl;
         break;
       }
@@ -61,9 +64,9 @@ const void Chat::mainMenu() {
   std::cout << "Enter your choice: ";
 }
 
-const void Chat::newUserMenu() {
+const void Chat::singUp() {
   User user;
-
+  
   bool isOk = false;
 
   std::string name;
@@ -105,7 +108,7 @@ const void Chat::newUserMenu() {
   std::cout << "User created successfully!" << std::endl;
 }
 
-const bool Chat::loginMenu(User& user) {
+const bool Chat::singIn(User& user) {
   bool isOk = false;
 
   std::string login;
@@ -119,7 +122,7 @@ const bool Chat::loginMenu(User& user) {
   std::cout << std::endl;
 
   do {
-    std::cout << "Enter your name or login: ";
+    std::cout << "Enter your login: ";
     std::getline(std::cin, login);
 
     std::cout << "Enter your password: ";
@@ -129,7 +132,7 @@ const bool Chat::loginMenu(User& user) {
   } while (!isOk);
 
   for (size_t i = 0; i < m_users.size(); ++i) {
-    if (m_users[i].GetName() == login || m_users[i].GetLogin() == login) {
+    if (m_users[i].GetLogin() == login) {
       user = m_users[i];
     }
   }
@@ -139,24 +142,36 @@ const bool Chat::loginMenu(User& user) {
   return true;
 }
 
-const void Chat::createChat(const User& user) {
+const void Chat::loadHistory(const std::vector<std::string>& messages) const {
+  if (!messages.empty()) {
+    for (size_t i = 0; i < messages.size(); ++i) {
+      std::cout << messages[i] << std::endl;
+    }
+  }
+}
+
+const void Chat::createChat(const User& user, Message* messages) {
   bool isExit = false;
 
   std::string message;
+  std::string user_name = "[" + user.GetName() + "]: ";
 
   std::cout << std::endl;
   std::cout << "Hello, " << user.GetName() << "!" << std::endl;
   std::cout << "________________________________________" << std::endl;
   std::cout << std::endl;
-  std::cout << "[SF_Chat]: " << user.GetName() << " online!" << std::endl;
-
+  
+  loadHistory(messages->GetMessages());
+  
   while (!isExit) {
-    std::cout << "[" << user.GetName() << "]: ";
+    std::cout << user_name;
     getline(std::cin, message);
 
     if (message == "--exit") {
-      std::cout << "[SF_Chat]: " << user.GetName() << " offline!" << std::endl;
       isExit = true;
+      continue;
     }
+    
+    messages->SetMessage(user_name + message);
   }
 }
