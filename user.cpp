@@ -37,7 +37,8 @@ const bool User::CheckLogin(const std::vector<User>& users,
 }
 
 const bool User::CheckPassword(const std::string& password) const {
-  return checkSpaces(password) && checkPasswordUnique(password);
+  return checkSpaces(password) && checkPasswordLength(password) &&
+         checkPasswordUnique(password);
 }
 
 const bool User::checkSpaces(const std::string& str) const {
@@ -96,6 +97,17 @@ const bool User::checkPasswordUnique(const std::string& password) const {
   return true;
 }
 
+const bool User::checkPasswordLength(const std::string& password) const {
+  int password_length = 6;
+  if (password.size() < password_length) {
+    std::cout << "WARNING: Password is too short (must be at less 6 character)"
+              << std::endl;
+    return false;
+  }
+
+  return true;
+}
+
 const bool User::CheckSingIn(const std::vector<User>& users,
                              const std::string& login,
                              const std::string& password) const {
@@ -108,8 +120,7 @@ const bool User::CheckSingIn(const std::vector<User>& users,
   }
 
   for (size_t i = 0; i < users.size(); ++i) {
-    if (users[i].GetLogin() == login &&
-        users[i].GetPassword() == password) {
+    if (users[i].GetLogin() == login && users[i].GetPassword() == password) {
       return true;
     }
   }

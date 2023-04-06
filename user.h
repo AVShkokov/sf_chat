@@ -6,7 +6,7 @@
 class User {
  public:
   User() = default;
-  User(std::string name, std::string login, std::string password)
+  User(std::string& name, std::string& login, std::string& password)
       : m_name(name), m_login(login), m_password(password) {}
 
   ~User() = default;
@@ -38,6 +38,8 @@ class User {
   std::string m_password;
 
   const bool checkSpaces(const std::string& str) const;
+  const bool checkPasswordLength(const std::string& password) const;
+
   const bool checkNameUnique(const std::vector<User>& users,
                              const std::string& name) const;
   const bool checkLoginUnique(const std::vector<User>& users,
