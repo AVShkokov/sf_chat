@@ -28,29 +28,51 @@ void User::SetPassword(const std::string& password) {
 
 const bool User::CheckName(const std::vector<User>& users,
                            const std::string& name) const {
-  return checkSpaces(name) && checkNameUnique(users, name);
+  bool isOk = false;
+  
+  try {
+    isOk = checkSpaces(name);
+  } catch (const char* exception) {
+    std::cout << "Exception caught: " << exception << std::endl;
+  }
+  
+  return isOk && checkNameUnique(users, name);
 }
 
 const bool User::CheckLogin(const std::vector<User>& users,
                             const std::string& login) const {
-  return checkSpaces(login) && checkLoginUnique(users, login);
+  bool isOk = false;
+  
+  try {
+    isOk = checkSpaces(login);
+  } catch (const char* exception) {
+    std::cout << "Exception caught: " << exception << std::endl;
+  }
+  
+  return isOk && checkLoginUnique(users, login);
 }
 
 const bool User::CheckPassword(const std::string& password) const {
-  return checkSpaces(password) && checkPasswordLength(password) &&
+  bool isOk = false;
+  
+  try {
+    isOk = checkSpaces(password);
+  } catch (const char* exception) {
+    std::cout << "Exception caught: " << exception << std::endl;
+  }
+  
+  return isOk && checkPasswordLength(password) &&
          checkPasswordUnique(password);
 }
 
 const bool User::checkSpaces(const std::string& str) const {
   if (str.empty()) {
-    std::cout << "WARNING: Enter cannot be empty" << std::endl;
-    return false;
+    throw "Enter cannot be empty";
   }
 
   for (const auto& ch : str) {
     if (ch == ' ') {
-      std::cout << "WARNING: Enter cannot contain space character" << std::endl;
-      return false;
+      throw "Enter cannot contain space character";
     }
   }
 
@@ -115,7 +137,15 @@ const bool User::CheckSingIn(const std::vector<User>& users,
     return false;
   }
 
-  if (!checkSpaces(login) || !checkSpaces(password)) {
+  bool isOk = false;
+
+  try {
+    isOk = !checkSpaces(login) || !checkSpaces(password);
+  } catch (const char* exception) {
+    std::cout << "Exception caught: " << exception << std::endl;
+  }
+  
+  if (isOk) {
     return false;
   }
 
