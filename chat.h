@@ -21,17 +21,20 @@ class Chat {
  private:
   std::string m_chat_name;
 
+  User m_user;
   std::vector<User> m_users;
+
+  std::vector<Message> m_messages;
 
   const void mainMenu();
 
   const void singUp();
-  const bool singIn(User& user);
+  const bool singIn();
 
-  const void loadHistory(const Message* messages,
-                         const std::string& from) const;
+  const void loadHistory(const std::string& user_name) const;
 
-  const void createChat(const User& user, Message* messages);
+  const void createChat();
+  const bool privateMessage(std::string& text, std::string& to);
 
-  const bool chatCommand(const std::string& message) const;
+  const bool chatCommand(const std::string& command) const;
 };

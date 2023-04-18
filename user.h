@@ -6,8 +6,6 @@
 class User {
  public:
   User() = default;
-  User(std::string& name, std::string& login, std::string& password)
-      : m_name(name), m_login(login), m_password(password) {}
 
   ~User() = default;
 

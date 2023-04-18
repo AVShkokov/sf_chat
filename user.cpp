@@ -47,8 +47,8 @@ const bool User::checkSpaces(const std::string& str) const {
     return false;
   }
 
-  for (size_t ch = 0; ch < str.size(); ++ch) {
-    if (str[ch] == ' ') {
+  for (const auto& ch : str) {
+    if (ch == ' ') {
       std::cout << "WARNING: Enter cannot contain space character" << std::endl;
       return false;
     }
@@ -59,9 +59,9 @@ const bool User::checkSpaces(const std::string& str) const {
 
 const bool User::checkNameUnique(const std::vector<User>& users,
                                  const std::string& name) const {
-  for (size_t i = 0; i < users.size(); ++i) {
-    if (users[i].GetName() == name) {
-      std::cout << "WARNING: User with name " << users[i].GetName()
+  for (const auto& user : users) {
+    if (user.GetName() == name) {
+      std::cout << "WARNING: User with name " << user.GetName()
                 << " already exists." << std::endl;
       return false;
     }
@@ -72,9 +72,9 @@ const bool User::checkNameUnique(const std::vector<User>& users,
 
 const bool User::checkLoginUnique(const std::vector<User>& users,
                                   const std::string& login) const {
-  for (size_t i = 0; i < users.size(); ++i) {
-    if (users[i].GetLogin() == login) {
-      std::cout << "WARNING: User with login " << users[i].GetLogin()
+  for (const auto& user : users) {
+    if (user.GetLogin() == login) {
+      std::cout << "WARNING: User with login " << user.GetLogin()
                 << " already exists." << std::endl;
       return false;
     }
@@ -119,8 +119,8 @@ const bool User::CheckSingIn(const std::vector<User>& users,
     return false;
   }
 
-  for (size_t i = 0; i < users.size(); ++i) {
-    if (users[i].GetLogin() == login && users[i].GetPassword() == password) {
+  for (const auto& user : users) {
+    if (user.GetLogin() == login && user.GetPassword() == password) {
       return true;
     }
   }

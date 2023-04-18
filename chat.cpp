@@ -3,12 +3,16 @@
 #include <iomanip>
 #include <iostream>
 
-#include <array>
+const std::string& Chat::GetChatName() const {
+  return m_chat_name;
+}
+
+void Chat::SetChatName(const std::string& chat_name) {
+  m_chat_name = chat_name;
+}
 
 const void Chat::Init() {
   std::cout << "Welcone to " << GetChatName() << "!" << std::endl;
-
-  Message* messages = new Message();
 
   char choice;
 
@@ -20,40 +24,24 @@ const void Chat::Init() {
     switch (choice) {
       case '1': {
         singUp();
-
         break;
       }
-
       case '2': {
-        User user;
-
-        if (singIn(user)) {
-          createChat(user, messages);
+        if (singIn()) {
+          createChat();
         }
-
         break;
       }
-
       case '3': {
-        delete messages;
         std::cout << std::endl << "Goodbye!" << std::endl;
         break;
       }
-
       default: {
         std::cout << std::endl << "Input error!" << std::endl;
         break;
       }
     }
   } while (choice != '3');
-}
-
-const std::string& Chat::GetChatName() const {
-  return m_chat_name;
-}
-
-void Chat::SetChatName(const std::string& chat_name) {
-  m_chat_name = chat_name;
 }
 
 const void Chat::mainMenu() {
@@ -68,14 +56,6 @@ const void Chat::mainMenu() {
 }
 
 const void Chat::singUp() {
-  User user;
-
-  bool isOk = false;
-
-  std::string name;
-  std::string login;
-  std::string password;
-
   std::cin.ignore();  // clear buffer, because use mixed input
 
   std::cout << std::endl;
@@ -83,40 +63,40 @@ const void Chat::singUp() {
   std::cout << "_________________" << std::endl;
   std::cout << std::endl;
 
+  bool isOk = false;
+
+  std::string name;
   do {
     std::cout << "Enter name: ";
     std::getline(std::cin, name);
-    isOk = user.CheckName(m_users, name);
+    isOk = m_user.CheckName(m_users, name);
   } while (!isOk);
-  user.SetName(name);
+  m_user.SetName(name);
 
+  std::string login;
   do {
     std::cout << "Enter login: ";
     std::getline(std::cin, login);
-    isOk = user.CheckLogin(m_users, login);
+    isOk = m_user.CheckLogin(m_users, login);
   } while (!isOk);
-  user.SetLogin(login);
+  m_user.SetLogin(login);
 
+  std::string password;
   do {
     std::cout << "Enter password: ";
     std::getline(std::cin, password);
-    isOk = user.CheckPassword(password);
+    isOk = m_user.CheckPassword(password);
   } while (!isOk);
-  user.SetPassword(password);
+  m_user.SetPassword(password);
 
   if (isOk) {
-    m_users.push_back(std::move(user));
+    m_users.push_back(m_user);
   }
 
   std::cout << "User created successfully!" << std::endl;
 }
 
-const bool Chat::singIn(User& user) {
-  bool isOk = false;
-
-  std::string login;
-  std::string password;
-
+const bool Chat::singIn() {
   std::cin.ignore();  // clear buffer, because use mixed input
 
   std::cout << std::endl;
@@ -124,6 +104,10 @@ const bool Chat::singIn(User& user) {
   std::cout << "__________________" << std::endl;
   std::cout << std::endl;
 
+  bool isOk = false;
+
+  std::string login;
+  std::string password;
   do {
     std::cout << "Enter your login: ";
     std::getline(std::cin, login);
@@ -131,12 +115,12 @@ const bool Chat::singIn(User& user) {
     std::cout << "Enter your password: ";
     std::getline(std::cin, password);
 
-    isOk = user.CheckSingIn(m_users, login, password);
+    isOk = m_user.CheckSingIn(m_users, login, password);
   } while (!isOk);
 
-  for (size_t i = 0; i < m_users.size(); ++i) {
-    if (m_users[i].GetLogin() == login) {
-      user = m_users[i];
+  for (const auto& user : m_users) {
+    if (user.GetLogin() == login) {
+      m_user = user;
     }
   }
 
@@ -145,30 +129,25 @@ const bool Chat::singIn(User& user) {
   return true;
 }
 
-const void Chat::loadHistory(const Message* messages,
-                             const std::string& from) const {
-  for (size_t i = 0; i < messages->GetAllMessages().size(); ++i) {
-    if (messages->GetAllMessages()[i][1] != "all" &&
-        messages->GetAllMessages()[i][0] == from) {
-      messages->PrintPrivateMessage(messages->GetAllMessages()[i]);
-    } else if (messages->GetAllMessages()[i][1] != "all" &&
-               messages->GetAllMessages()[i][0] != from) {
+const void Chat::loadHistory(const std::string& user_name) const {
+  for (const auto& message : m_messages) {
+    if (message.GetTo() != "all" &&
+        (message.GetFrom() == user_name || message.GetTo() == user_name)) {
+      std::cout << "[" << message.GetFrom() << " to " << message.GetTo()
+                << "]:" << message.GetText() << std::endl;
+    } else if (message.GetTo() != "all" && (message.GetFrom() != user_name ||
+                                            message.GetTo() != user_name)) {
       continue;
     } else {
-      messages->PrintMessage(messages->GetAllMessages()[i]);
+      std::cout << "[" << message.GetFrom() << "]: " << message.GetText()
+                << std::endl;
     }
   }
 }
 
-const void Chat::createChat(const User& user, Message* messages) {
-  bool isLeave = false;
-
-  std::string from = "[" + user.GetName() + "]: ";
-  std::string to = "all";
-  std::string text;
-
+const void Chat::createChat() {
   std::cout << std::endl;
-  std::cout << "Hello, " << user.GetName() << "!" << std::endl;
+  std::cout << "Hello, " << m_user.GetName() << "!" << std::endl;
   std::cout << "________________________________________" << std::endl;
   std::cout << std::endl;
   std::cout << "Type \"@name\" to send private message" << std::endl;
@@ -176,79 +155,55 @@ const void Chat::createChat(const User& user, Message* messages) {
   std::cout << "Type \"--leave\" to exit from chat room" << std::endl;
   std::cout << std::endl;
 
-  if (!messages->GetAllMessages().empty()) {
-    loadHistory(messages, from);
+  std::string from = m_user.GetName();
+
+  if (!m_messages.empty()) {
+    loadHistory(from);
   }
 
+  bool isLeave = false;
   while (!isLeave) {
-    std::cout << from;
+    std::cout << "[" + from + "]: ";
+
+    std::string to = "all";
+    std::string text;
+
     getline(std::cin, text);
 
     if (text[0] == '-' && text[1] == '-') {
       isLeave = chatCommand(text);
       continue;
     } else if (text[0] == '@') {
-      if (text[1] == ' ') {
-        std::cout << "WARNING: Enter cannot contain space between @ and name"
-                  << std::endl;
+      if (!privateMessage(text, to)) {
         continue;
-      }
-
-      to.clear();
-
-      int count = 0;
-
-      for (size_t i = 1; i < text.size(); ++i) {
-        if (text[i] == ' ') {
-          break;
-        } else {
-          to += text[i];
-          count += 1;
-        }
-      }
-      if (text.size() < count + 2) {
-        std::cout << "WARNING: Message is not typed" << std::endl;
-        continue;
-      } else {
-        text = text.substr(count + 2);
       }
     }
 
-    messages->SetMessage(from, to, text);
-    messages->SetAllMessages();
+    m_messages.push_back(Message(from, to, text));
   }
 }
 
-const bool Chat::chatCommand(const std::string& message) const {
-  if (message == "--help") {
-    int width = 20;
-
+const bool Chat::chatCommand(const std::string& command) const {
+  if (command == "--help") {
     std::cout << std::endl;
     std::cout << "_____________________________________" << std::endl;
     std::cout << std::endl;
-    std::cout << "--help" << std::setw(width - 6) << "Show help" << std::endl;
-    std::cout << "--leave" << std::setw(width + 3) << "Exit from chat room"
+    std::cout << "--help" << std::setw(14) << "Show help" << std::endl;
+    std::cout << "--leave" << std::setw(23) << "Exit from chat room"
               << std::endl;
-    std::cout << "--online" << std::setw(width) << "Show users online"
-              << std::endl;
-    std::cout << "--users" << std::setw(width - 2) << "Show all users"
-              << std::endl;
+    std::cout << "--users" << std::setw(18) << "Show all users" << std::endl;
     std::cout << std::endl;
 
     return false;
   }
 
-  if (message == "--leave") {
+  if (command == "--leave") {
     return true;
   }
 
-  //if (message == "--online") {
-  //	return false;
-  //}
-
-  if (message == "--users") {
-    for (size_t i = 0; i < m_users.size(); ++i) {
-      std::cout << m_users[i].GetLogin() << std::endl;
+  if (command == "--users") {
+    for (const auto& user : m_users) {
+      std::cout << user.GetLogin() << std::endl;
     }
 
     return false;
@@ -257,4 +212,60 @@ const bool Chat::chatCommand(const std::string& message) const {
   std::cout << "Unknown command. Please type \"--help\" for more information"
             << std::endl;
   return false;
+}
+
+const bool Chat::privateMessage(std::string& text, std::string& to) {
+  if (text[1] == ' ') {
+    std::cout << "WARNING: Enter cannot contain space between @ and name"
+              << std::endl;
+
+    return false;
+  }
+
+  to.clear();
+
+  int count = 0;
+
+  for (const auto& ch : text) {
+    if (ch == ' ') {
+      break;
+    } else if (ch == '@') {
+      continue;
+    } else {
+      to += ch;
+      count += 1;
+    }
+  }
+
+  bool isFind = false;
+  for (const auto& user : m_users) {
+    if (user.GetLogin() == to) {
+      isFind = true;
+    }
+  }
+
+  if (!isFind) {
+    std::cout
+        << "WARNING: User wiht login " << to
+        << " is not in user list. Please type \"--users\" for more information"
+        << std::endl;
+
+    return false;
+  }
+
+  if (m_user.GetLogin() == to) {
+    std::cout << "WARNING: You cannot send message to yourself" << std::endl;
+
+    return false;
+  }
+
+  if (text.size() < count + 3) {
+    std::cout << "WARNING: Message is not typed" << std::endl;
+
+    return false;
+  } else {
+    text = text.substr(count + 1);
+  }
+
+  return true;
 }
