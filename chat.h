@@ -28,8 +28,10 @@ class Chat {
 
   const void mainMenu();
 
-  const void singUp();
+  const bool singUp();
   const bool singIn();
+
+  void inputPassword(std::string& password);
 
   const void loadHistory(const std::string& user_name) const;
 

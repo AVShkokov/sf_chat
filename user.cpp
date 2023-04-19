@@ -29,40 +29,39 @@ void User::SetPassword(const std::string& password) {
 const bool User::CheckName(const std::vector<User>& users,
                            const std::string& name) const {
   bool isOk = false;
-  
+
   try {
     isOk = checkSpaces(name);
   } catch (const char* exception) {
     std::cout << "Exception caught: " << exception << std::endl;
   }
-  
+
   return isOk && checkNameUnique(users, name);
 }
 
 const bool User::CheckLogin(const std::vector<User>& users,
                             const std::string& login) const {
   bool isOk = false;
-  
+
   try {
     isOk = checkSpaces(login);
   } catch (const char* exception) {
     std::cout << "Exception caught: " << exception << std::endl;
   }
-  
+
   return isOk && checkLoginUnique(users, login);
 }
 
 const bool User::CheckPassword(const std::string& password) const {
   bool isOk = false;
-  
+
   try {
     isOk = checkSpaces(password);
   } catch (const char* exception) {
     std::cout << "Exception caught: " << exception << std::endl;
   }
-  
-  return isOk && checkPasswordLength(password) &&
-         checkPasswordUnique(password);
+
+  return isOk && checkPasswordLength(password) && checkPasswordUnique(password);
 }
 
 const bool User::checkSpaces(const std::string& str) const {
@@ -144,7 +143,7 @@ const bool User::CheckSingIn(const std::vector<User>& users,
   } catch (const char* exception) {
     std::cout << "Exception caught: " << exception << std::endl;
   }
-  
+
   if (isOk) {
     return false;
   }
