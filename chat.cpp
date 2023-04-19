@@ -1,5 +1,6 @@
 #include "chat.h"
 
+#include <conio.h>
 #include <iomanip>
 #include <iostream>
 
@@ -55,12 +56,14 @@ const void Chat::mainMenu() {
   std::cout << "Enter your choice: ";
 }
 
-const void Chat::singUp() {
+const bool Chat::singUp() {
   std::cin.ignore();  // clear buffer, because use mixed input
 
   std::cout << std::endl;
   std::cout << "Creating new user" << std::endl;
   std::cout << "_________________" << std::endl;
+  std::cout << std::endl;
+  std::cout << "(3) Exit in main menu" << std::endl;
   std::cout << std::endl;
 
   bool isOk = false;
@@ -69,6 +72,11 @@ const void Chat::singUp() {
   do {
     std::cout << "Enter name: ";
     std::getline(std::cin, name);
+
+    if (name == "3") {
+      return false;
+    }
+
     isOk = m_user.CheckName(m_users, name);
   } while (!isOk);
   m_user.SetName(name);
@@ -84,7 +92,8 @@ const void Chat::singUp() {
   std::string password;
   do {
     std::cout << "Enter password: ";
-    std::getline(std::cin, password);
+    inputPassword(password);
+
     isOk = m_user.CheckPassword(password);
   } while (!isOk);
   m_user.SetPassword(password);
@@ -94,6 +103,8 @@ const void Chat::singUp() {
   }
 
   std::cout << "User created successfully!" << std::endl;
+
+  return true;
 }
 
 const bool Chat::singIn() {
@@ -102,6 +113,8 @@ const bool Chat::singIn() {
   std::cout << std::endl;
   std::cout << "Sing in to " << GetChatName() << std::endl;
   std::cout << "__________________" << std::endl;
+  std::cout << std::endl;
+  std::cout << "(3) Exit in main menu" << std::endl;
   std::cout << std::endl;
 
   bool isOk = false;
@@ -112,8 +125,12 @@ const bool Chat::singIn() {
     std::cout << "Enter your login: ";
     std::getline(std::cin, login);
 
+    if (login == "3") {
+      return false;
+    }
+
     std::cout << "Enter your password: ";
-    std::getline(std::cin, password);
+    inputPassword(password);
 
     isOk = m_user.CheckSingIn(m_users, login, password);
   } while (!isOk);
@@ -127,6 +144,15 @@ const bool Chat::singIn() {
   std::cout << "Sing in successfully!" << std::endl;
 
   return true;
+}
+
+void Chat::inputPassword(std::string& password) {
+  char ch;
+  while ((ch = _getch()) != '\r') {
+    password += ch;
+    _putch('*');
+  }
+  std::cout << std::endl;
 }
 
 const void Chat::loadHistory(const std::string& user_name) const {
