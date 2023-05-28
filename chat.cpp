@@ -205,7 +205,7 @@ const void Chat::createChat() {
       }
     }
 
-    m_messages.push_back(Message(from, to, text));
+    m_messages.emplace_back(Message(from, to, text));
   }
 }
 
