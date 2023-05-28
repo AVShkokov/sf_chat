@@ -98,9 +98,7 @@ const bool Chat::singUp() {
   } while (!isOk);
   m_user.SetPassword(password);
 
-  if (isOk) {
-    m_users.push_back(m_user);
-  }
+  m_users.push_back(m_user);
 
   std::cout << "User created successfully!" << std::endl;
 
