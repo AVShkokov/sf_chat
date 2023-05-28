@@ -69,10 +69,8 @@ const bool User::checkSpaces(const std::string& str) const {
     throw "Enter cannot be empty";
   }
 
-  for (const auto& ch : str) {
-    if (ch == ' ') {
-      throw "Enter cannot contain space character";
-    }
+  if (str.find(' ') != std::string::npos) {
+    throw "Enter cannot contain space character";
   }
 
   return true;
