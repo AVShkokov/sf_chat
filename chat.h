@@ -5,6 +5,7 @@
 
 #include <string>
 #include <vector>
+#include <fstream>
 
 class Chat {
  public:
@@ -16,7 +17,7 @@ class Chat {
   const std::string& GetChatName() const;
   void SetChatName(const std::string& chat_name);
 
-  const void Init();
+  void Init();
 
  private:
   std::string m_chat_name;
@@ -24,18 +25,21 @@ class Chat {
   User m_user;
   std::vector<User> m_users;
 
+  std::string users_file_name = "users";
+  std::fstream users_file;
+
   std::vector<Message> m_messages;
 
-  const void mainMenu();
+  void loadUsers();
+
+  void mainMenu();
 
   const bool singUp();
   const bool singIn();
 
-  void inputPassword(std::string& password);
+  void loadHistory(const std::string& user_name) const;
 
-  const void loadHistory(const std::string& user_name) const;
-
-  const void createChat();
+  void createChat();
   const bool privateMessage(std::string& text, std::string& to);
 
   const bool chatCommand(const std::string& command) const;

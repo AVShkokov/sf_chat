@@ -1,6 +1,5 @@
 #include "chat.h"
 
-#include <conio.h>
 #include <iomanip>
 #include <iostream>
 
@@ -12,8 +11,10 @@ void Chat::SetChatName(const std::string& chat_name) {
   m_chat_name = chat_name;
 }
 
-const void Chat::Init() {
-  std::cout << "Welcone to " << GetChatName() << "!" << std::endl;
+void Chat::Init() {
+  loadUsers();
+
+  std::cout << "Welcome to " << GetChatName() << "!" << std::endl;
 
   char choice;
 
@@ -45,7 +46,41 @@ const void Chat::Init() {
   } while (choice != '3');
 }
 
-const void Chat::mainMenu() {
+void Chat::loadUsers() {
+  users_file = std::fstream(users_file_name, std::ios::in);
+
+  if (!users_file) {
+    users_file = std::fstream(users_file_name, std::ios::out | std::ios::trunc);
+  }
+
+  if (!users_file.is_open()) {
+    std::cout << "Error: Could not open file \"users\"!" << std::endl;
+
+    return;
+  }
+
+  std::string name;
+  std::string login;
+  std::string password;
+
+  while (!users_file.eof()) {
+    users_file >> name >> login >> password;
+
+    if (name.empty() || login.empty() || password.empty()) {
+      continue;
+    }
+
+    m_users.emplace_back(User(name, login, password));
+
+    name.clear();
+    login.clear();
+    password.clear();
+  }
+
+  users_file.close();
+}
+
+void Chat::mainMenu() {
   std::cout << std::endl;
   std::cout << "Please choose an options:" << std::endl;
   std::cout << "(1) Sign up" << std::endl;
@@ -57,6 +92,8 @@ const void Chat::mainMenu() {
 }
 
 const bool Chat::singUp() {
+  users_file.open(users_file_name, std::ios::out | std::ios::app);
+
   std::cin.ignore();  // clear buffer, because use mixed input
 
   std::cout << std::endl;
@@ -80,6 +117,7 @@ const bool Chat::singUp() {
     isOk = m_user.CheckName(m_users, name);
   } while (!isOk);
   m_user.SetName(name);
+  users_file << name << " ";
 
   std::string login;
   do {
@@ -88,15 +126,18 @@ const bool Chat::singUp() {
     isOk = m_user.CheckLogin(m_users, login);
   } while (!isOk);
   m_user.SetLogin(login);
+  users_file << login << " ";
 
   std::string password;
   do {
     std::cout << "Enter password: ";
-    inputPassword(password);
-
+    std::getline(std::cin, password);
     isOk = m_user.CheckPassword(password);
   } while (!isOk);
   m_user.SetPassword(password);
+  users_file << password << std::endl;
+
+  users_file.close();
 
   m_users.push_back(m_user);
 
@@ -128,8 +169,7 @@ const bool Chat::singIn() {
     }
 
     std::cout << "Enter your password: ";
-    inputPassword(password);
-
+    std::getline(std::cin, password);
     isOk = m_user.CheckSingIn(m_users, login, password);
   } while (!isOk);
 
@@ -144,16 +184,7 @@ const bool Chat::singIn() {
   return true;
 }
 
-void Chat::inputPassword(std::string& password) {
-  char ch;
-  while ((ch = _getch()) != '\r') {
-    password += ch;
-    _putch('*');
-  }
-  std::cout << std::endl;
-}
-
-const void Chat::loadHistory(const std::string& user_name) const {
+void Chat::loadHistory(const std::string& user_name) const {
   for (const auto& message : m_messages) {
     if (message.GetTo() != "all" &&
         (message.GetFrom() == user_name || message.GetTo() == user_name)) {
@@ -169,7 +200,7 @@ const void Chat::loadHistory(const std::string& user_name) const {
   }
 }
 
-const void Chat::createChat() {
+void Chat::createChat() {
   std::cout << std::endl;
   std::cout << "Hello, " << m_user.GetName() << "!" << std::endl;
   std::cout << "________________________________________" << std::endl;
@@ -248,7 +279,7 @@ const bool Chat::privateMessage(std::string& text, std::string& to) {
 
   to.clear();
 
-  int count = 0;
+  size_t count = 0;
 
   for (const auto& ch : text) {
     if (ch == ' ') {
@@ -270,7 +301,7 @@ const bool Chat::privateMessage(std::string& text, std::string& to) {
 
   if (!isFind) {
     std::cout
-        << "WARNING: User wiht login " << to
+        << "WARNING: User with login " << to
         << " is not in user list. Please type \"--users\" for more information"
         << std::endl;
 

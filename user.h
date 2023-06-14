@@ -6,6 +6,9 @@
 class User {
  public:
   User() = default;
+  User(const std::string& name, const std::string& login,
+       const std::string& password)
+      : m_name(name), m_login(login), m_password(password) {}
 
   ~User() = default;
 
