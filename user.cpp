@@ -1,5 +1,6 @@
 #include "user.h"
 
+#include <algorithm>
 #include <iostream>
 
 const std::string& User::GetName() const {
@@ -29,7 +30,6 @@ void User::SetPassword(const std::string& password) {
 const bool User::CheckName(const std::vector<User>& users,
                            const std::string& name) const {
   bool isOk = false;
-
   try {
     isOk = checkSpaces(name);
   } catch (const char* exception) {
@@ -42,7 +42,6 @@ const bool User::CheckName(const std::vector<User>& users,
 const bool User::CheckLogin(const std::vector<User>& users,
                             const std::string& login) const {
   bool isOk = false;
-
   try {
     isOk = checkSpaces(login);
   } catch (const char* exception) {
@@ -54,7 +53,6 @@ const bool User::CheckLogin(const std::vector<User>& users,
 
 const bool User::CheckPassword(const std::string& password) const {
   bool isOk = false;
-
   try {
     isOk = checkSpaces(password);
   } catch (const char* exception) {
@@ -78,12 +76,13 @@ const bool User::checkSpaces(const std::string& str) const {
 
 const bool User::checkNameUnique(const std::vector<User>& users,
                                  const std::string& name) const {
-  for (const auto& user : users) {
-    if (user.GetName() == name) {
-      std::cout << "WARNING: User with name " << user.GetName()
-                << " already exists." << std::endl;
-      return false;
-    }
+  const bool isOk =
+      std::any_of(users.begin(), users.end(),
+                  [name](const User& user) { return user.GetName() == name; });
+
+  if (isOk) {
+    std::cout << "WARNING: User with this name already exists." << std::endl;
+    return false;
   }
 
   return true;
@@ -91,12 +90,13 @@ const bool User::checkNameUnique(const std::vector<User>& users,
 
 const bool User::checkLoginUnique(const std::vector<User>& users,
                                   const std::string& login) const {
-  for (const auto& user : users) {
-    if (user.GetLogin() == login) {
-      std::cout << "WARNING: User with login " << user.GetLogin()
-                << " already exists." << std::endl;
-      return false;
-    }
+  const bool isOk = std::any_of(
+      users.begin(), users.end(),
+      [login](const User& user) { return user.GetLogin() == login; });
+
+  if (isOk) {
+    std::cout << "WARNING: User with this login already exists." << std::endl;
+    return false;
   }
 
   return true;
@@ -135,23 +135,22 @@ const bool User::CheckSingIn(const std::vector<User>& users,
   }
 
   bool isOk = false;
-
   try {
     isOk = !checkSpaces(login) || !checkSpaces(password);
   } catch (const char* exception) {
     std::cout << "Exception caught: " << exception << std::endl;
+    return isOk;
   }
 
-  if (isOk) {
+  isOk = std::any_of(
+      users.begin(), users.end(), [login, password](const User& user) {
+        return user.GetLogin() == login && user.GetPassword() == password;
+      });
+
+  if (!isOk) {
+    std::cout << "WARNING: Incorrect login or password" << std::endl;
     return false;
   }
 
-  for (const auto& user : users) {
-    if (user.GetLogin() == login && user.GetPassword() == password) {
-      return true;
-    }
-  }
-
-  std::cout << "WARNING: Incorrect login or password" << std::endl;
-  return false;
+  return true;
 }

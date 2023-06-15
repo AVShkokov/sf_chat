@@ -10,12 +10,11 @@
 class Chat {
  public:
   Chat() = default;
-  Chat(const std::string& chat_name) : m_chat_name(chat_name) {}
+  explicit Chat(const std::string& chat_name) : m_chat_name(chat_name) {}
 
   ~Chat() = default;
 
   const std::string& GetChatName() const;
-  void SetChatName(const std::string& chat_name);
 
   void Init();
 
@@ -25,13 +24,12 @@ class Chat {
   User m_user;
   std::vector<User> m_users;
   std::string users_file_name = "users";
-  std::fstream users_file;
+  std::string messages_file_name = "messages";
+  std::fstream file;
 
   std::vector<Message> m_messages;
-  std::string messages_file_name = "messages";
-  std::fstream messages_file;
 
-  void loadUsers();
+  void readFromFile(const bool& isUsers);
 
   void mainMenu();
 

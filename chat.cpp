@@ -7,12 +7,8 @@ const std::string& Chat::GetChatName() const {
   return m_chat_name;
 }
 
-void Chat::SetChatName(const std::string& chat_name) {
-  m_chat_name = chat_name;
-}
-
 void Chat::Init() {
-  loadUsers();
+  readFromFile(true);
 
   std::cout << "Welcome to " << GetChatName() << "!" << std::endl;
 
@@ -46,38 +42,40 @@ void Chat::Init() {
   } while (choice != '3');
 }
 
-void Chat::loadUsers() {
-  users_file = std::fstream(users_file_name, std::ios::in);
+void Chat::readFromFile(const bool& isUsers) {
+  const std::string file_name = isUsers ? users_file_name : messages_file_name;
+  file = std::fstream(file_name, std::ios::in);
 
-  if (!users_file) {
-    users_file = std::fstream(users_file_name, std::ios::out | std::ios::trunc);
+  if (!file) {
+    file = std::fstream(file_name, std::ios::out | std::ios::trunc);
   }
 
-  if (!users_file.is_open()) {
-    std::cout << "Error: Could not open file \"users\"!" << std::endl;
+  if (!file.is_open()) {
+    std::cout << "Error: Could not open file \"" << file_name << "\"!"
+              << std::endl;
 
     return;
   }
 
-  std::string name;
-  std::string login;
-  std::string password;
+  std::string str;
+  while (std::getline(file, str)) {
+    size_t pos = str.find(' ');
+    std::string part_1 = str.substr(0, pos);
 
-  while (!users_file.eof()) {
-    users_file >> name >> login >> password;
+    pos = str.find(' ', pos + 1);
+    std::string part_2 =
+        str.substr(part_1.size() + 1, pos - (part_1.size() + 1));
 
-    if (name.empty() || login.empty() || password.empty()) {
-      continue;
+    std::string part_3 = str.erase(0, pos + 1);
+
+    if (isUsers) {
+      m_users.emplace_back(User(part_1, part_2, part_3));
+    } else {
+      m_messages.emplace_back(Message(part_1, part_2, part_3));
     }
-
-    m_users.emplace_back(User(name, login, password));
-
-    name.clear();
-    login.clear();
-    password.clear();
   }
 
-  users_file.close();
+  file.close();
 }
 
 void Chat::mainMenu() {
@@ -92,7 +90,7 @@ void Chat::mainMenu() {
 }
 
 const bool Chat::singUp() {
-  users_file.open(users_file_name, std::ios::out | std::ios::app);
+  file.open(users_file_name, std::ios::out | std::ios::app);
 
   std::cin.ignore();  // clear buffer, because use mixed input
 
@@ -117,7 +115,7 @@ const bool Chat::singUp() {
     isOk = m_user.CheckName(m_users, name);
   } while (!isOk);
   m_user.SetName(name);
-  users_file << name << " ";
+  file << name << " ";
 
   std::string login;
   do {
@@ -126,7 +124,7 @@ const bool Chat::singUp() {
     isOk = m_user.CheckLogin(m_users, login);
   } while (!isOk);
   m_user.SetLogin(login);
-  users_file << login << " ";
+  file << login << " ";
 
   std::string password;
   do {
@@ -135,9 +133,9 @@ const bool Chat::singUp() {
     isOk = m_user.CheckPassword(password);
   } while (!isOk);
   m_user.SetPassword(password);
-  users_file << password << std::endl;
+  file << password << std::endl;
 
-  users_file.close();
+  file.close();
 
   m_users.push_back(m_user);
 
@@ -185,43 +183,15 @@ const bool Chat::singIn() {
 }
 
 void Chat::loadHistory(const std::string& user_name) {
-  messages_file = std::fstream(messages_file_name, std::ios::in);
+  m_messages.clear();
 
-  if (!messages_file) {
-    messages_file =
-        std::fstream(messages_file_name, std::ios::out | std::ios::trunc);
-  }
-
-  if (!messages_file.is_open()) {
-    std::cout << "Error: Could not open file \"messages\"!" << std::endl;
-
-    return;
-  }
-
-  std::string str;
-  while (std::getline(messages_file, str)) {
-    size_t pos = str.find(' ');
-    std::string from = str.substr(0, pos);
-
-    pos = str.find(' ', pos + 1);
-    std::string to = str.substr(from.size() + 1, pos - (from.size() + 1));
-
-    std::string text = str.erase(0, pos + 1);
-
-    if (from.empty() || to.empty() || text.empty()) {
-      continue;
-    }
-
-    m_messages.emplace_back(Message(from, to, text));
-  }
-
-  messages_file.close();
+  readFromFile(false);
 
   for (const auto& message : m_messages) {
     if (message.GetTo() != "all" &&
         (message.GetFrom() == user_name || message.GetTo() == user_name)) {
       std::cout << "[" << message.GetFrom() << " to " << message.GetTo()
-                << "]:" << message.GetText() << std::endl;
+                << "]: " << message.GetText() << std::endl;
     } else if (message.GetTo() != "all" && (message.GetFrom() != user_name ||
                                             message.GetTo() != user_name)) {
       continue;
@@ -246,7 +216,7 @@ void Chat::createChat() {
 
   loadHistory(from);
 
-  messages_file.open(messages_file_name, std::ios::out | std::ios::app);
+  file.open(messages_file_name, std::ios::out | std::ios::app);
 
   bool isLeave = false;
   while (!isLeave) {
@@ -267,10 +237,10 @@ void Chat::createChat() {
     }
 
     m_messages.emplace_back(Message(from, to, text));
-    messages_file << from << " " << to << " " << text << std::endl;
+    file << from << " " << to << " " << text << std::endl;
   }
 
-  messages_file.close();
+  file.close();
 }
 
 const bool Chat::chatCommand(const std::string& command) const {
@@ -363,7 +333,7 @@ const bool Chat::privateMessage(std::string& text, std::string& to) {
 
     return false;
   } else {
-    text = text.substr(count + 1);
+    text = text.substr(count + 2);
   }
 
   return true;
