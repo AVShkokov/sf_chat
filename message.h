@@ -12,13 +12,10 @@ class Message {
   ~Message() = default;
 
   const std::string& GetFrom() const;
-  void SetFrom(const std::string& from);
 
   const std::string& GetTo() const;
-  void SetTo(const std::string& to);
 
   const std::string& GetText() const;
-  void SetText(const std::string& text);
 
  private:
   std::string m_from;

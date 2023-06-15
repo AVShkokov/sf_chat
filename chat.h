@@ -3,39 +3,43 @@
 #include "message.h"
 #include "user.h"
 
+#include <fstream>
 #include <string>
 #include <vector>
 
 class Chat {
  public:
   Chat() = default;
-  Chat(const std::string& chat_name) : m_chat_name(chat_name) {}
+  explicit Chat(const std::string& chat_name) : m_chat_name(chat_name) {}
 
   ~Chat() = default;
 
   const std::string& GetChatName() const;
-  void SetChatName(const std::string& chat_name);
 
-  const void Init();
+  void Init();
 
  private:
   std::string m_chat_name;
 
   User m_user;
   std::vector<User> m_users;
+  std::string users_file_name = "users";
+  std::string messages_file_name = "messages";
+  std::fstream file;
 
   std::vector<Message> m_messages;
 
-  const void mainMenu();
+  void readFromFile(const bool& isUsers);
+
+  void mainMenu();
 
   const bool singUp();
   const bool singIn();
 
-  void inputPassword(std::string& password);
+  void loadHistory(const std::string& user_name);
 
-  const void loadHistory(const std::string& user_name) const;
+  void createChat();
 
-  const void createChat();
   const bool privateMessage(std::string& text, std::string& to);
 
   const bool chatCommand(const std::string& command) const;
