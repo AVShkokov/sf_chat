@@ -3,9 +3,9 @@
 #include "message.h"
 #include "user.h"
 
+#include <fstream>
 #include <string>
 #include <vector>
-#include <fstream>
 
 class Chat {
  public:
@@ -24,11 +24,12 @@ class Chat {
 
   User m_user;
   std::vector<User> m_users;
-
   std::string users_file_name = "users";
   std::fstream users_file;
 
   std::vector<Message> m_messages;
+  std::string messages_file_name = "messages";
+  std::fstream messages_file;
 
   void loadUsers();
 
@@ -37,9 +38,10 @@ class Chat {
   const bool singUp();
   const bool singIn();
 
-  void loadHistory(const std::string& user_name) const;
+  void loadHistory(const std::string& user_name);
 
   void createChat();
+
   const bool privateMessage(std::string& text, std::string& to);
 
   const bool chatCommand(const std::string& command) const;

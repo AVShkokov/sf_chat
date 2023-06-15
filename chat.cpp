@@ -184,7 +184,39 @@ const bool Chat::singIn() {
   return true;
 }
 
-void Chat::loadHistory(const std::string& user_name) const {
+void Chat::loadHistory(const std::string& user_name) {
+  messages_file = std::fstream(messages_file_name, std::ios::in);
+
+  if (!messages_file) {
+    messages_file =
+        std::fstream(messages_file_name, std::ios::out | std::ios::trunc);
+  }
+
+  if (!messages_file.is_open()) {
+    std::cout << "Error: Could not open file \"messages\"!" << std::endl;
+
+    return;
+  }
+
+  std::string str;
+  while (std::getline(messages_file, str)) {
+    size_t pos = str.find(' ');
+    std::string from = str.substr(0, pos);
+
+    pos = str.find(' ', pos + 1);
+    std::string to = str.substr(from.size() + 1, pos - (from.size() + 1));
+
+    std::string text = str.erase(0, pos + 1);
+
+    if (from.empty() || to.empty() || text.empty()) {
+      continue;
+    }
+
+    m_messages.emplace_back(Message(from, to, text));
+  }
+
+  messages_file.close();
+
   for (const auto& message : m_messages) {
     if (message.GetTo() != "all" &&
         (message.GetFrom() == user_name || message.GetTo() == user_name)) {
@@ -210,11 +242,11 @@ void Chat::createChat() {
   std::cout << "Type \"--leave\" to exit from chat room" << std::endl;
   std::cout << std::endl;
 
-  std::string from = m_user.GetName();
+  const std::string from = m_user.GetName();
 
-  if (!m_messages.empty()) {
-    loadHistory(from);
-  }
+  loadHistory(from);
+
+  messages_file.open(messages_file_name, std::ios::out | std::ios::app);
 
   bool isLeave = false;
   while (!isLeave) {
@@ -235,7 +267,10 @@ void Chat::createChat() {
     }
 
     m_messages.emplace_back(Message(from, to, text));
+    messages_file << from << " " << to << " " << text << std::endl;
   }
+
+  messages_file.close();
 }
 
 const bool Chat::chatCommand(const std::string& command) const {
@@ -243,10 +278,10 @@ const bool Chat::chatCommand(const std::string& command) const {
     std::cout << std::endl;
     std::cout << "_____________________________________" << std::endl;
     std::cout << std::endl;
+    std::cout << "--users" << std::setw(18) << "Show all users" << std::endl;
     std::cout << "--help" << std::setw(14) << "Show help" << std::endl;
     std::cout << "--leave" << std::setw(23) << "Exit from chat room"
               << std::endl;
-    std::cout << "--users" << std::setw(18) << "Show all users" << std::endl;
     std::cout << std::endl;
 
     return false;
@@ -258,7 +293,7 @@ const bool Chat::chatCommand(const std::string& command) const {
 
   if (command == "--users") {
     for (const auto& user : m_users) {
-      std::cout << user.GetLogin() << std::endl;
+      std::cout << "User name: " << user.GetName() << std::endl;
     }
 
     return false;
@@ -294,27 +329,36 @@ const bool Chat::privateMessage(std::string& text, std::string& to) {
 
   bool isFind = false;
   for (const auto& user : m_users) {
-    if (user.GetLogin() == to) {
+    if (user.GetName() == to) {
       isFind = true;
     }
   }
 
   if (!isFind) {
     std::cout
-        << "WARNING: User with login " << to
+        << "WARNING: User with name " << to
         << " is not in user list. Please type \"--users\" for more information"
         << std::endl;
 
     return false;
   }
 
-  if (m_user.GetLogin() == to) {
+  if (m_user.GetName() == to) {
     std::cout << "WARNING: You cannot send message to yourself" << std::endl;
 
     return false;
   }
 
-  if (text.size() < count + 3) {
+  size_t pos = text.find(' ');
+  if (text[pos + 1] == ' ') {
+    std::cout << "WARNING: Enter cannot contain two or more space between name "
+                 "and message"
+              << std::endl;
+
+    return false;
+  }
+
+  if (text.size() < count + 2) {
     std::cout << "WARNING: Message is not typed" << std::endl;
 
     return false;
