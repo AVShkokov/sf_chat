@@ -2,8 +2,8 @@
 
 #include "message.h"
 #include "user.h"
+#include "database.h"
 
-#include <fstream>
 #include <string>
 #include <vector>
 
@@ -23,13 +23,11 @@ class Chat {
 
   User m_user;
   std::vector<User> m_users;
-  std::string users_file_name = "users";
-  std::string messages_file_name = "messages";
-  std::fstream file;
-
   std::vector<Message> m_messages;
 
-  void readFromFile(const bool& isUsers);
+  DataBase m_database;
+  
+  void readFromDB(const bool& isUsers);
 
   void mainMenu();
 

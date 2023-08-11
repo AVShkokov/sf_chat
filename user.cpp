@@ -117,7 +117,7 @@ const bool User::checkPasswordUnique(const std::string& password) const {
 }
 
 const bool User::checkPasswordLength(const std::string& password) const {
-  int password_length = 6;
+  size_t password_length = 6;
   if (password.size() < password_length) {
     std::cout << "WARNING: Password is too short (must be at less 6 character)"
               << std::endl;
