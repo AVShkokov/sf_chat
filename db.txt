@@ -1,0 +1,14 @@
+create database chat;
+use chat;
+create table if not exists users ( 
+     id         SERIAL PRIMARY KEY, 
+     name       VARCHAR(20) not null, 
+     login      VARCHAR(20) not null,
+     password   VARCHAR(10) not null
+);
+create table if not exists messages( 
+     id         SERIAL PRIMARY KEY, 
+     sender     VARCHAR(10) not null,
+     receiver	VARCHAR(10) not null,
+     text	text
+); 
