@@ -8,7 +8,13 @@ const std::string& Chat::GetChatName() const {
 }
 
 void Chat::Init() {
-  readFromFile(true);
+    std::system("ver && date /t");
+
+    if (!m_database.ConnectToDB()) {
+        return;
+    }
+
+    readFromDB(true);
 
   std::cout << "Welcome to " << GetChatName() << "!" << std::endl;
 
@@ -42,40 +48,29 @@ void Chat::Init() {
   } while (choice != '3');
 }
 
-void Chat::readFromFile(const bool& isUsers) {
-  const std::string file_name = isUsers ? users_file_name : messages_file_name;
-  file = std::fstream(file_name, std::ios::in);
-
-  if (!file) {
-    file = std::fstream(file_name, std::ios::out | std::ios::trunc);
-  }
-
-  if (!file.is_open()) {
-    std::cout << "Error: Could not open file \"" << file_name << "\"!"
-              << std::endl;
-
-    return;
-  }
-
-  std::string str;
-  while (std::getline(file, str)) {
-    size_t pos = str.find(' ');
-    std::string part_1 = str.substr(0, pos);
-
-    pos = str.find(' ', pos + 1);
-    std::string part_2 =
-        str.substr(part_1.size() + 1, pos - (part_1.size() + 1));
-
-    std::string part_3 = str.erase(0, pos + 1);
+void Chat::readFromDB(const bool& isUsers) {
+    size_t step = 0;
 
     if (isUsers) {
-      m_users.emplace_back(User(part_1, part_2, part_3));
-    } else {
-      m_messages.emplace_back(Message(part_1, part_2, part_3));
+        std::vector<std::string> query = m_database.GetDataFromDB("SELECT id, name, login, password FROM users;");
+        if (!query.empty()) {
+            while (step < query.size()) {
+                m_users.emplace_back(User(query[step + 1], query[step + 2], query[step + 3]));
+                
+                step += 4;
+            }
+        }
     }
-  }
-
-  file.close();
+    else {
+        std::vector<std::string> query = m_database.GetDataFromDB("SELECT id, sender, receiver, text FROM messages;");
+        if (!query.empty()) {
+            while (step < query.size()) {
+                m_messages.emplace_back(Message(query[step + 1], query[step + 2], query[step + 3]));
+             
+                step += 4;
+            }
+        }
+    }
 }
 
 void Chat::mainMenu() {
@@ -90,8 +85,6 @@ void Chat::mainMenu() {
 }
 
 const bool Chat::singUp() {
-  file.open(users_file_name, std::ios::out | std::ios::app);
-
   std::cin.ignore();  // clear buffer, because use mixed input
 
   std::cout << std::endl;
@@ -115,7 +108,6 @@ const bool Chat::singUp() {
     isOk = m_user.CheckName(m_users, name);
   } while (!isOk);
   m_user.SetName(name);
-  file << name << " ";
 
   std::string login;
   do {
@@ -124,7 +116,6 @@ const bool Chat::singUp() {
     isOk = m_user.CheckLogin(m_users, login);
   } while (!isOk);
   m_user.SetLogin(login);
-  file << login << " ";
 
   std::string password;
   do {
@@ -133,10 +124,8 @@ const bool Chat::singUp() {
     isOk = m_user.CheckPassword(password);
   } while (!isOk);
   m_user.SetPassword(password);
-  file << password << std::endl;
 
-  file.close();
-
+  m_database.QueryToDB("INSERT into users (name, login, password) VALUES ('" + name + "', '" + login + "', '" + password + "');");
   m_users.push_back(m_user);
 
   std::cout << "User created successfully!" << std::endl;
@@ -185,7 +174,7 @@ const bool Chat::singIn() {
 void Chat::loadHistory(const std::string& user_name) {
   m_messages.clear();
 
-  readFromFile(false);
+  readFromDB(false);
 
   for (const auto& message : m_messages) {
     if (message.GetTo() != "all" &&
@@ -216,8 +205,6 @@ void Chat::createChat() {
 
   loadHistory(from);
 
-  file.open(messages_file_name, std::ios::out | std::ios::app);
-
   bool isLeave = false;
   while (!isLeave) {
     std::cout << "[" + from + "]: ";
@@ -236,11 +223,9 @@ void Chat::createChat() {
       }
     }
 
+    m_database.QueryToDB("INSERT into messages (sender, receiver, text) VALUES ('" + from + "', '" + to + "', '" + text + "');");
     m_messages.emplace_back(Message(from, to, text));
-    file << from << " " << to << " " << text << std::endl;
   }
-
-  file.close();
 }
 
 const bool Chat::chatCommand(const std::string& command) const {
