@@ -3,9 +3,11 @@
 #include "message.h"
 #include "user.h"
 #include "database.h"
+#include "logger.h"
 
 #include <string>
 #include <vector>
+#include <memory>
 
 class Chat {
 public:
@@ -25,7 +27,10 @@ private:
 	std::vector<User> m_users;
 	std::vector<Message> m_messages;
 
-	DataBase m_database;
+	std::shared_ptr<DataBase> m_database = std::make_shared<DataBase>();
+
+	const std::string m_log_file_name = "log.txt";
+	Logger* m_log = new Logger(m_log_file_name);
 
 	void readFromDB(const bool& isUsers);
 

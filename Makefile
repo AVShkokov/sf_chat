@@ -2,8 +2,8 @@ TARGET = sf_chat
 LIB = chat
 SRC = main.cpp
 OBJECTS = main.o
-LIB_SRC = chat.cpp message.cpp user.cpp
-LIB_OBJECTS = chat.o message.o user.o
+LIB_SRC = chat.cpp database.cpp logger.cpp message.cpp user.cpp
+LIB_OBJECTS = chat.o database.o logger.o message.o user.o
 PREFIX = ~
 
 sf_chat: $(OBJECTS) lib
