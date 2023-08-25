@@ -23,23 +23,23 @@ bool DataBase::ConnectToDB() {
 	std::cout << "Enter following data to connect to DB:" << std::endl;
 
 	std::string host;
-	std::cout << "IP:" << std::endl;
+	std::cout << "IP: ";
 	std::cin >> host;
 
 	unsigned int port = 0;
-	std::cout << "Port:" << std::endl;
+	std::cout << "Port: ";
 	std::cin >> port;
 
 	std::string db_name;
-	std::cout << "Database name:" << std::endl;
+	std::cout << "Database name: ";
 	std::cin >> db_name;
 
 	std::string user;
-	std::cout << "User:" << std::endl;
+	std::cout << "User: ";
 	std::cin >> user;
 
 	std::string password;
-	std::cout << "Password:" << std::endl;
+	std::cout << "Password: ";
 	std::cin >> password;
 
 	if (!mysql_real_connect(m_mysql.get(), host.c_str(), user.c_str(), password.c_str(), db_name.c_str(), port, NULL, 0)) {

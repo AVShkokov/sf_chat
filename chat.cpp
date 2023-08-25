@@ -8,14 +8,14 @@ const std::string& Chat::GetChatName() const {
 }
 
 void Chat::Init() {
-	std::system("ver && date /t");
-
-	if (!m_database.ConnectToDB()) {
+	if (!m_database->ConnectToDB()) {
 		return;
 	}
 
 	readFromDB(true);
-
+	
+	std::system("ver && date /t");
+	
 	std::cout << "Welcome to " << GetChatName() << "!" << std::endl;
 
 	char choice;
@@ -52,7 +52,7 @@ void Chat::readFromDB(const bool& isUsers) {
 	size_t step = 0;
 
 	if (isUsers) {
-		std::vector<std::string> query = m_database.GetDataFromDB("SELECT id, name, login, password FROM users;");
+		std::vector<std::string> query = m_database->GetDataFromDB("SELECT id, name, login, password FROM users;");
 		if (!query.empty()) {
 			while (step < query.size()) {
 				m_users.emplace_back(User(query[step + 1], query[step + 2], query[step + 3]));
@@ -62,7 +62,7 @@ void Chat::readFromDB(const bool& isUsers) {
 		}
 	}
 	else {
-		std::vector<std::string> query = m_database.GetDataFromDB("SELECT id, sender, receiver, text FROM messages;");
+		std::vector<std::string> query = m_database->GetDataFromDB("SELECT id, sender, receiver, text FROM messages;");
 		if (!query.empty()) {
 			while (step < query.size()) {
 				m_messages.emplace_back(Message(query[step + 1], query[step + 2], query[step + 3]));
@@ -125,7 +125,7 @@ const bool Chat::singUp() {
 	} while (!isOk);
 	m_user.SetPassword(password);
 
-	m_database.QueryToDB("INSERT into users (name, login, password) VALUES ('" + name + "', '" + login + "', '" + password + "');");
+	m_database->QueryToDB("INSERT into users (name, login, password) VALUES ('" + name + "', '" + login + "', '" + password + "');");
 	m_users.push_back(m_user);
 
 	std::cout << "User created successfully!" << std::endl;
@@ -226,8 +226,10 @@ void Chat::createChat() {
 			}
 		}
 
-		m_database.QueryToDB("INSERT into messages (sender, receiver, text) VALUES ('" + from + "', '" + to + "', '" + text + "');");
+		m_database->QueryToDB("INSERT into messages (sender, receiver, text) VALUES ('" + from + "', '" + to + "', '" + text + "');");
 		m_messages.emplace_back(Message(from, to, text));
+
+		m_log->WritoToLogFile("From " + from + " to " + to + ": " + text);
 	}
 }
 
@@ -238,8 +240,8 @@ const bool Chat::chatCommand(const std::string& command) const {
 		std::cout << std::endl;
 		std::cout << "--users" << std::setw(18) << "Show all users" << std::endl;
 		std::cout << "--help" << std::setw(14) << "Show help" << std::endl;
-		std::cout << "--leave" << std::setw(23) << "Exit from chat room"
-			<< std::endl;
+		std::cout << "--leave" << std::setw(23) << "Exit from chat room" << std::endl;
+		std::cout << "--log" << std::setw(33) << "Show last entry in log file" << std::endl;
 		std::cout << std::endl;
 
 		return false;
@@ -253,6 +255,13 @@ const bool Chat::chatCommand(const std::string& command) const {
 		for (const auto& user : m_users) {
 			std::cout << "User name: " << user.GetName() << std::endl;
 		}
+
+		return false;
+	}
+
+	if (command == "--log") {
+		std::cout << "Log: ";
+		m_log->ReadFromLogFile();
 
 		return false;
 	}

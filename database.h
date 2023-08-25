@@ -20,7 +20,7 @@ public:
 	void QueryToDB(const std::string& query);
 
 private:
-	std::shared_ptr <MYSQL> m_mysql;
+	std::shared_ptr<MYSQL> m_mysql;
 	bool m_connect_status;
 };
 
