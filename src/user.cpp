@@ -19,16 +19,16 @@ void User::SetLogin(const std::string& login) {
   m_login = login;
 }
 
-const std::string& User::GetPassword() const {
+const Hash& User::GetPassword() const {
   return m_password;
 }
 
-void User::SetPassword(const std::string& password) {
+void User::SetPassword(const Hash& password) {
   m_password = password;
 }
 
-const bool User::CheckName(const std::vector<User>& users,
-                           const std::string& name) const {
+bool User::CheckName(const std::vector<User>& users,
+                     const std::string& name) const {
   bool isOk = false;
   try {
     isOk = checkSpaces(name);
@@ -40,8 +40,8 @@ const bool User::CheckName(const std::vector<User>& users,
   return isOk && checkNameUnique(users, name);
 }
 
-const bool User::CheckLogin(const std::vector<User>& users,
-                            const std::string& login) const {
+bool User::CheckLogin(const std::vector<User>& users,
+                      const std::string& login) const {
   bool isOk = false;
   try {
     isOk = checkSpaces(login);
@@ -53,7 +53,7 @@ const bool User::CheckLogin(const std::vector<User>& users,
   return isOk && checkLoginUnique(users, login);
 }
 
-const bool User::CheckPassword(const std::string& password) const {
+bool User::CheckPassword(const std::string& password) const {
   bool isOk = false;
   try {
     isOk = checkSpaces(password);
@@ -65,7 +65,7 @@ const bool User::CheckPassword(const std::string& password) const {
   return isOk && checkPasswordLength(password) && checkPasswordUnique(password);
 }
 
-const bool User::checkSpaces(const std::string& str) const {
+bool User::checkSpaces(const std::string& str) const {
   if (str.empty()) {
       throw "Enter cannot be empty";
     }
@@ -77,8 +77,8 @@ const bool User::checkSpaces(const std::string& str) const {
   return true;
 }
 
-const bool User::checkNameUnique(const std::vector<User>& users,
-                                 const std::string& name) const {
+bool User::checkNameUnique(const std::vector<User>& users,
+                           const std::string& name) const {
   const bool isOk =
       std::any_of(users.begin(), users.end(),
                   [name](const User& user) { return user.GetName() == name; });
@@ -91,8 +91,8 @@ const bool User::checkNameUnique(const std::vector<User>& users,
   return true;
 }
 
-const bool User::checkLoginUnique(const std::vector<User>& users,
-                                  const std::string& login) const {
+bool User::checkLoginUnique(const std::vector<User>& users,
+                            const std::string& login) const {
   const bool isOk = std::any_of(
         users.begin(), users.end(),
         [login](const User& user) { return user.GetLogin() == login; });
@@ -105,7 +105,7 @@ const bool User::checkLoginUnique(const std::vector<User>& users,
   return true;
 }
 
-const bool User::checkPasswordUnique(const std::string& password) const {
+bool User::checkPasswordUnique(const std::string& password) const {
   if (m_name == password) {
       std::cout << "WARNING: Password cannot include your name" << std::endl;
       return false;
@@ -119,7 +119,7 @@ const bool User::checkPasswordUnique(const std::string& password) const {
   return true;
 }
 
-const bool User::checkPasswordLength(const std::string& password) const {
+bool User::checkPasswordLength(const std::string& password) const {
   size_t password_length = 6;
   if (password.size() < password_length) {
       std::cout << "WARNING: Password is too short (must be at less 6 character)"
@@ -130,9 +130,9 @@ const bool User::checkPasswordLength(const std::string& password) const {
   return true;
 }
 
-const bool User::CheckSingIn(const std::vector<User>& users,
-			     const std::string& login,
-			     const std::string& password) const {
+bool User::CheckSingIn(const std::vector<User>& users,
+		       const std::string& login,
+		       const std::string& password) const {
   if (users.empty()) {
       return false;
     }
@@ -146,9 +146,11 @@ const bool User::CheckSingIn(const std::vector<User>& users,
     return isOk;
   }
 
+  Hash passwordHash = sha1(password);
+
   isOk = std::any_of(
-        users.begin(), users.end(), [login, password](const User& user) {
-      return user.GetLogin() == login && user.GetPassword() == password;
+        users.begin(), users.end(), [login, passwordHash](const User& user) {
+      return user.GetLogin() == login && user.GetPassword() == passwordHash;
     });
 
   if (!isOk) {
