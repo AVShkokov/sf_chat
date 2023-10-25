@@ -55,7 +55,7 @@ void Chat::readFromDB(const bool& isUsers) {
       std::vector<std::string> query = m_database->GetDataFromDB("SELECT id, name, login, password FROM users;");
       if (!query.empty()) {
           while (step < query.size()) {
-              m_users.emplace_back(User(query[step + 1], query[step + 2], query[step + 3]));
+              m_users.emplace_back(User(query[step + 1], query[step + 2], sha1(query[step + 3])));
 
               step += 4;
             }
@@ -123,7 +123,8 @@ const bool Chat::singUp() {
       std::getline(std::cin, password);
       isOk = m_user.CheckPassword(password);
     } while (!isOk);
-  m_user.SetPassword(password);
+  Hash passwordHash = sha1(password);
+  m_user.SetPassword(passwordHash);
 
   m_database->QueryToDB("INSERT into users (name, login, password) VALUES ('" + name + "', '" + login + "', '" + password + "');");
   m_users.push_back(m_user);
