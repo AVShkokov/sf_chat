@@ -8,7 +8,6 @@
 
 DataBase::DataBase() : m_connect_status(false)
 {
-  m_db = QSqlDatabase::addDatabase("QSQLITE");
 }
 
 DataBase::~DataBase()
@@ -16,15 +15,15 @@ DataBase::~DataBase()
   m_db.close();
 }
 
-bool DataBase::ConnectToDB() {
+bool DataBase::ConnectToDB(QString& message) {
+  m_db = QSqlDatabase::addDatabase("QSQLITE");
+
   m_db.setDatabaseName("./chatDB.db");
 
   if(!m_db.open()) {
-      std::cout << "Error: can't connect to database " << m_db.lastError().text().toStdString() << std::endl;
+      message = QString("Error: can't connect to database %1").arg(m_db.lastError().text());
     }
   else {
-      std::cout << "Connect success!" << std::endl;
-
       m_query = new QSqlQuery(m_db);
       m_query->exec("CREATE TABLE if not exists users ( "
                     "id         SERIAL PRIMARY KEY, "
@@ -46,16 +45,16 @@ bool DataBase::ConnectToDB() {
   return m_connect_status;
 }
 
-const std::vector<std::string> DataBase::GetDataFromDB(const std::string& query)
+const QVector<QString> DataBase::GetDataFromDB(const QString& query)
 {
-  std::vector<std::string> result;
+  QVector<QString> result;
 
-  if(m_query->exec(QString::fromStdString(query))) {
+  if(m_query->exec(query)) {
       QSqlRecord record = m_query->record();
 
       while(m_query->next()) {
           for (int i = 0; i < record.count(); ++i) {
-              result.push_back(m_query->value(i).toString().toStdString());
+              result.push_back(m_query->value(i).toString());
             }
         }
     }
@@ -66,6 +65,6 @@ const std::vector<std::string> DataBase::GetDataFromDB(const std::string& query)
   return result;
 }
 
-void DataBase::QueryToDB(const std::string& query) {
-  m_query->exec(QString::fromStdString(query));
+void DataBase::QueryToDB(const QString& query) {
+  m_query->exec(query);
 }

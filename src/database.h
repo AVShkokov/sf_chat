@@ -3,8 +3,8 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 
-#include <vector>
-#include <string>
+#include <QString>
+#include <QVector>
 
 class DataBase
 {
@@ -13,10 +13,10 @@ public:
 
   ~DataBase();
 
-  bool ConnectToDB();
+  bool ConnectToDB(QString& message);
 
-  const std::vector<std::string> GetDataFromDB(const std::string& query);
-  void QueryToDB(const std::string& query);
+  const QVector<QString> GetDataFromDB(const QString& query);
+  void QueryToDB(const QString& query);
 
 private:
   QSqlDatabase m_db;

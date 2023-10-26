@@ -11,7 +11,7 @@ public:
 
   ~Logger();
 
-  void WritoToLogFile(const std::string& log_text);
+  void WriteToLogFile(const std::string& log_text);
   void ReadFromLogFile();
 
 private:

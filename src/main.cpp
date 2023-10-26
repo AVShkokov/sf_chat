@@ -1,14 +1,18 @@
-#include "chat.h"
+#include <QApplication>
 
-#include <iostream>
-#include <memory>
-#include <string>
+#include "mainwindow.h"
 
-int main() {
-  const std::string chat_name = "SF_Chat";
-  std::unique_ptr<Chat> chat = std::make_unique<Chat>(chat_name);
+int main(int argc, char *argv[]) {
+  QApplication a(argc, argv);
 
-  chat->Init();
+  auto w = MainWindow::createClient();
 
-  return 0;
+  if(w) {
+      w->show();
+    }
+  else {
+      return 0;
+    }
+
+  return a.exec();
 }
