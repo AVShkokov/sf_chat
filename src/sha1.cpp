@@ -1,6 +1,8 @@
 ﻿#include "sha1.h"
+
 #include <string>
 #include <cstring>
+
 uint cycle_shift_left(uint val, int bit_count) {
 	return (val << bit_count | val >> (32 - bit_count));
 }

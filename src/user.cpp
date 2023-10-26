@@ -1,21 +1,20 @@
 #include "user.h"
 
 #include <algorithm>
-#include <iostream>
 
-const std::string& User::GetName() const {
+const QString& User::GetName() const {
   return m_name;
 }
 
-void User::SetName(const std::string& name) {
+void User::SetName(const QString& name) {
   m_name = name;
 }
 
-const std::string& User::GetLogin() const {
+const QString& User::GetLogin() const {
   return m_login;
 }
 
-void User::SetLogin(const std::string& login) {
+void User::SetLogin(const QString& login) {
   m_login = login;
 }
 
@@ -27,126 +26,138 @@ void User::SetPassword(const Hash& password) {
   m_password = password;
 }
 
-bool User::CheckName(const std::vector<User>& users,
-                     const std::string& name) const {
+bool User::CheckName(const QVector<User>& users,
+                     const QString& name,
+                     QString& message) const {
   bool isOk = false;
-  try {
-    isOk = checkSpaces(name);
-  }
-  catch (const char* exception) {
-    std::cout << "Exception caught: " << exception << std::endl;
-  }
 
-  return isOk && checkNameUnique(users, name);
-}
-
-bool User::CheckLogin(const std::vector<User>& users,
-                      const std::string& login) const {
-  bool isOk = false;
-  try {
-    isOk = checkSpaces(login);
-  }
-  catch (const char* exception) {
-    std::cout << "Exception caught: " << exception << std::endl;
-  }
-
-  return isOk && checkLoginUnique(users, login);
-}
-
-bool User::CheckPassword(const std::string& password) const {
-  bool isOk = false;
-  try {
-    isOk = checkSpaces(password);
-  }
-  catch (const char* exception) {
-    std::cout << "Exception caught: " << exception << std::endl;
-  }
-
-  return isOk && checkPasswordLength(password) && checkPasswordUnique(password);
-}
-
-bool User::checkSpaces(const std::string& str) const {
-  if (str.empty()) {
-      throw "Enter cannot be empty";
+  isOk = checkSpaces(name, message);
+  if(!isOk) {
+      return isOk;
     }
 
-  if (str.find(' ') != std::string::npos) {
-      throw "Enter cannot contain space character";
+  return isOk && checkNameUnique(users, name, message);
+}
+
+bool User::CheckLogin(const QVector<User>& users,
+                      const QString& login,
+                      QString& message) const {
+  bool isOk = false;
+
+  isOk = checkSpaces(login, message);
+  if(!isOk) {
+      return isOk;
+    }
+
+  return isOk && checkLoginUnique(users, login, message);
+}
+
+bool User::CheckPassword(const QString& password,
+                         QString& message) const {
+  bool isOk = false;
+
+  isOk = checkSpaces(password, message);
+  if(!isOk) {
+      return isOk;
+    }
+
+  return isOk && checkPasswordLength(password, message) && checkPasswordUnique(password, message);
+}
+
+bool User::checkSpaces(const QString& str, QString& message) const {
+  if (str.isEmpty()) {
+      message = "Enter cannot be empty";
+
+      return false;
+    }
+
+  if (str.contains(' ')) {
+      message = "Enter cannot contain space character";
+
+      return false;
     }
 
   return true;
 }
 
-bool User::checkNameUnique(const std::vector<User>& users,
-                           const std::string& name) const {
+bool User::checkNameUnique(const QVector<User>& users,
+                           const QString& name,
+                           QString& message) const {
   const bool isOk =
       std::any_of(users.begin(), users.end(),
                   [name](const User& user) { return user.GetName() == name; });
 
   if (isOk) {
-      std::cout << "WARNING: User with this name already exists." << std::endl;
+      message = "User with this name already exists.";
       return false;
     }
 
   return true;
 }
 
-bool User::checkLoginUnique(const std::vector<User>& users,
-                            const std::string& login) const {
+bool User::checkLoginUnique(const QVector<User>& users,
+                            const QString& login,
+                            QString& message) const {
   const bool isOk = std::any_of(
         users.begin(), users.end(),
         [login](const User& user) { return user.GetLogin() == login; });
 
   if (isOk) {
-      std::cout << "WARNING: User with this login already exists." << std::endl;
+      message = "User with this login already exists.";
       return false;
     }
 
   return true;
 }
 
-bool User::checkPasswordUnique(const std::string& password) const {
+bool User::checkPasswordUnique(const QString& password,
+                               QString& message) const {
   if (m_name == password) {
-      std::cout << "WARNING: Password cannot include your name" << std::endl;
+      message = "Password cannot include your name";
       return false;
     }
 
   if (m_login == password) {
-      std::cout << "WARNING: Password cannot include your login" << std::endl;
+      message = "Password cannot include your login";
       return false;
     }
 
   return true;
 }
 
-bool User::checkPasswordLength(const std::string& password) const {
-  size_t password_length = 6;
+bool User::checkPasswordLength(const QString& password,
+                               QString& message) const {
+  int password_length = 6;
   if (password.size() < password_length) {
-      std::cout << "WARNING: Password is too short (must be at less 6 character)"
-                << std::endl;
+      message = "Password is too short (must be at less 6 character)";
       return false;
     }
 
   return true;
 }
 
-bool User::CheckSingIn(const std::vector<User>& users,
-		       const std::string& login,
-		       const std::string& password) const {
+bool User::CheckSingIn(const QVector<User>& users,
+		       const QString& login,
+		       const QString& password,
+		       QString& message) const {
   if (users.empty()) {
+      message = "Users list is empty. Please register.";
       return false;
     }
 
   bool isOk = false;
-  try {
-    isOk = !checkSpaces(login) || !checkSpaces(password);
-  }
-  catch (const char* exception) {
-    std::cout << "Exception caught: " << exception << std::endl;
-    return isOk;
-  }
 
-  Hash passwordHash = sha1(password);
+  isOk = checkSpaces(login, message);
+  if(!isOk) {
+      return isOk;
+    }
+
+  isOk = checkSpaces(password, message);
+  if(!isOk) {
+      return isOk;
+    }
+
+  Hash passwordHash = sha1(password.toStdString());
 
   isOk = std::any_of(
         users.begin(), users.end(), [login, passwordHash](const User& user) {
@@ -154,7 +165,7 @@ bool User::CheckSingIn(const std::vector<User>& users,
     });
 
   if (!isOk) {
-      std::cout << "WARNING: Incorrect login or password" << std::endl;
+      message = "Incorrect login or password";
       return false;
     }
 

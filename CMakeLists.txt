@@ -27,7 +27,7 @@ find_package(Qt5 COMPONENTS ${Qt5Modules} REQUIRED LinguistTools)
 file(GLOB_RECURSE SRC_FILES src/*.cpp)
 file(GLOB_RECURSE HEADERS_FILES src/*.h)
 file(GLOB_RECURSE RC_FILES src/*.qrc)
-file(GLOB_RECURSE UI_FILES ui/*.ui)
+file(GLOB_RECURSE UI_FILES src/*.ui)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)

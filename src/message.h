@@ -1,24 +1,24 @@
 #pragma once
 
-#include <string>
+#include <QString>
 
 class Message {
 public:
   Message() = default;
-  Message(const std::string& from, const std::string& to,
-          const std::string& text)
+  Message(const QString& from, const QString& to,
+          const QString& text)
     : m_from(from), m_to(to), m_text(text) {}
 
   ~Message() = default;
 
-  const std::string& GetFrom() const;
+  const QString& GetFrom() const;
 
-  const std::string& GetTo() const;
+  const QString& GetTo() const;
 
-  const std::string& GetText() const;
+  const QString& GetText() const;
 
 private:
-  std::string m_from;
-  std::string m_to;
-  std::string m_text;
+  QString m_from;
+  QString m_to;
+  QString m_text;
 };

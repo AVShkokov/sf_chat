@@ -1,49 +1,36 @@
 #pragma once
 
-#include "message.h"
-#include "user.h"
-#include "database.h"
-#include "logger.h"
+//#include "message.h"
+//#include "user.h"
+//#include "database.h"
+//#include "logger.h"
 
-#include <string>
-#include <vector>
-#include <memory>
+//#include <string>
+//#include <vector>
+//#include <memory>
 
-class Chat {
-public:
-  Chat() = default;
-  explicit Chat(const std::string& chat_name) : m_chat_name(chat_name) {}
+//class Chat {
+//public:
+//  Chat() = default;
+//  ~Chat() = default;
 
-  ~Chat() = default;
+//private:
+//  User m_user;
+//  std::vector<User> m_users;
+//  std::vector<Message> m_messages;
 
-  const std::string& GetChatName() const;
+//  std::shared_ptr<DataBase> m_database = std::make_shared<DataBase>();
 
-  void Init();
+//  const QString m_log_file_name = "log.txt";
+//  Logger* m_log = new Logger(m_log_file_name);
 
-private:
-  std::string m_chat_name;
+//  void readFromDB();
 
-  User m_user;
-  std::vector<User> m_users;
-  std::vector<Message> m_messages;
+//  void loadHistory(const QString& user_name);
 
-  std::shared_ptr<DataBase> m_database = std::make_shared<DataBase>();
+//  void createChat();
 
-  const std::string m_log_file_name = "log.txt";
-  Logger* m_log = new Logger(m_log_file_name);
+//  bool privateMessage(QString& text, QString& to);
 
-  void readFromDB(const bool& isUsers);
-
-  void mainMenu();
-
-  const bool singUp();
-  const bool singIn();
-
-  void loadHistory(const std::string& user_name);
-
-  void createChat();
-
-  const bool privateMessage(std::string& text, std::string& to);
-
-  const bool chatCommand(const std::string& command) const;
-};
+//  bool chatCommand(const QString& command) const;
+//};

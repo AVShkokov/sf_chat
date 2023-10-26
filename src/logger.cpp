@@ -19,7 +19,7 @@ Logger::~Logger() {
   m_file.close();
 }
 
-void Logger::WritoToLogFile(const std::string& log_text)
+void Logger::WriteToLogFile(const std::string& log_text)
 {
   m_mutex.lock();
 
