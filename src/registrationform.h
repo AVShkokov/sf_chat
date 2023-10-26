@@ -27,7 +27,7 @@ public:
 
 signals:
   void loginRequested();
-  void accepted();
+  void accepted(const User& user);
   void rejected();
 
 private slots:

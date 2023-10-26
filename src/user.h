@@ -1,9 +1,9 @@
 #pragma once
 
-#include "sha1.h"
-
 #include <QString>
 #include <QVector>
+
+#include "sha1.h"
 
 class User {
 public:

@@ -27,7 +27,7 @@ public:
 
 signals:
   void registrationRequested();
-  void accepted();
+  void accepted(const User& user);
   void rejected();
 
 private slots:

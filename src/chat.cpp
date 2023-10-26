@@ -3,19 +3,6 @@
 //#include <iomanip>
 //#include <iostream>
 
-//void Chat::readFromDB() {
-//  size_t step = 0;
-
-//  std::vector<QString> query = m_database->GetDataFromDB("SELECT id, sender, receiver, text FROM messages;");
-//  if (!query.empty()) {
-//      while (step < query.size()) {
-//          m_messages.emplace_back(Message(query[step + 1], query[step + 2], query[step + 3]));
-
-//          step += 4;
-//        }
-//    }
-//}
-
 //void Chat::createChat() {
 //  std::cout << std::endl;
 //  std::cout << "Hello, " << m_user.GetName() << "!" << std::endl;

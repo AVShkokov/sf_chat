@@ -22,21 +22,25 @@ public:
   explicit StartScreen(QWidget *parent = nullptr);
   ~StartScreen();
 
-  void setLoginForm();
-  void setRegistrationForm();
+  void setLoginForm() const;
+  void setRegistrationForm() const;
+
+  std::shared_ptr<DataBase> GetDB();
+  User GetUser() const;
 
 public slots:
-  void onLoggedIn();
+  void onLoggedIn(const User& user);
   void onRejectRequested();
 
 private:
-  void getDB();
+  void connectDB();
   void getUsers();
 
   Ui::StartScreen *ui;
 
   std::shared_ptr<DataBase> m_database = std::make_shared<DataBase>();
 
+  User m_user;
   QVector<User> m_users;
 };
 

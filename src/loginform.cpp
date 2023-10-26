@@ -45,7 +45,7 @@ void LoginForm::on_buttonBox_accepted()
         }
     }
 
-  emit accepted();
+  emit accepted(m_user);
 }
 
 void LoginForm::on_buttonBox_rejected()

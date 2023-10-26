@@ -9,7 +9,7 @@ StartScreen::StartScreen(QWidget *parent) :
 {
   ui->setupUi(this);
 
-  getDB();
+  connectDB();
   getUsers();
 
   ui->loginPage->setDatabase(m_database);
@@ -32,18 +32,30 @@ StartScreen::~StartScreen()
   delete ui;
 }
 
-void StartScreen::setLoginForm()
+User StartScreen::GetUser() const
+{
+  return m_user;
+}
+
+void StartScreen::setLoginForm() const
 {
   ui->stackedWidget->setCurrentIndex(0);
 }
 
-void StartScreen::setRegistrationForm()
+void StartScreen::setRegistrationForm() const
 {
   ui->stackedWidget->setCurrentIndex(1);
 }
 
-void StartScreen::onLoggedIn()
+std::shared_ptr<DataBase> StartScreen::GetDB()
 {
+  return m_database;
+}
+
+void StartScreen::onLoggedIn(const User& user)
+{
+  m_user = user;
+
   accept();
 }
 
@@ -52,7 +64,9 @@ void StartScreen::onRejectRequested()
   reject();
 }
 
-void StartScreen::getDB() {
+
+
+void StartScreen::connectDB() {
   QString message;
   if (!m_database->ConnectToDB(message)) {
       QMessageBox::critical(this,

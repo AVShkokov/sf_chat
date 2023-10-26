@@ -69,7 +69,7 @@ void RegistrationForm::on_buttonBox_accepted()
   m_database->QueryToDB("INSERT into users (name, login, password) VALUES ('" + name + "', '" + login + "', '" + password + "');");
   m_users.push_back(m_user);
 
-  emit accepted();
+  emit accepted(m_user);
 }
 
 void RegistrationForm::on_buttonBox_rejected()
