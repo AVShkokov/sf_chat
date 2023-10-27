@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>401</width>
-    <height>290</height>
+    <width>700</width>
+    <height>450</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,6 +19,11 @@
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
        <widget class="QLabel" name="welcomeLabel">
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>Hello </string>
         </property>
@@ -26,6 +31,13 @@
       </item>
       <item>
        <widget class="QLabel" name="nameLabel">
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -47,28 +59,48 @@
      </layout>
     </item>
     <item>
+     <widget class="QTextBrowser" name="textBrowser"/>
+    </item>
+    <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QLabel" name="label">
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
         <property name="text">
          <string>Message</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="messageLineEdit"/>
+       <widget class="QLineEdit" name="messageLineEdit">
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="sendPushButton">
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
         <property name="text">
          <string>Send</string>
         </property>
        </widget>
       </item>
      </layout>
-    </item>
-    <item>
-     <widget class="QTextBrowser" name="textBrowser"/>
     </item>
    </layout>
   </widget>
@@ -77,13 +109,13 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>401</width>
+     <width>700</width>
      <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMain_menu">
     <property name="title">
-     <string>Main menu</string>
+     <string>File</string>
     </property>
     <addaction name="actionClose"/>
    </widget>

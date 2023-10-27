@@ -18,7 +18,7 @@ DataBase::~DataBase()
 bool DataBase::ConnectToDB(QString& message) {
   m_db = QSqlDatabase::addDatabase("QSQLITE");
 
-  m_db.setDatabaseName("./chatDB.db");
+  m_db.setDatabaseName("../../../chatDB.db");
 
   if(!m_db.open()) {
       message = QString("Error: can't connect to database %1").arg(m_db.lastError().text());
@@ -26,17 +26,19 @@ bool DataBase::ConnectToDB(QString& message) {
   else {
       m_query = new QSqlQuery(m_db);
       m_query->exec("CREATE TABLE if not exists users ( "
-                    "id         SERIAL PRIMARY KEY, "
-                    "name       VARCHAR(20) not null, "
-                    "login      VARCHAR(20) not null, "
-                    "password   VARCHAR(10) not null "
+                    "id             INTEGER PRIMARY KEY,"
+                    "name           TEXT NOT NULL,"
+                    "login          TEXT NOT NULL,"
+                    "password       TEXT NOT NULL,"
+                    "ban_status     INTEGER NOT NULL DEFAULT 0,"
+                    "online_status  INTEGER NOT NULL DEFAULT 0"
                     ");");
 
       m_query->exec("CREATE TABLE if not exists messages( "
-                    "id         SERIAL PRIMARY KEY, "
-                    "sender     VARCHAR(10) not null, "
-                    "receiver	 VARCHAR(10) not null, "
-                    "text	     text "
+                    "id        INTEGER PRIMARY KEY,"
+                    "sender    TEXT NOT NULL,"
+                    "receiver  TEXT NOT NULL,"
+                    "text      TEXT"
                     ");");
 
       m_connect_status = true;

@@ -25,8 +25,9 @@ public:
   void setLoginForm() const;
   void setRegistrationForm() const;
 
-  std::shared_ptr<DataBase> GetDB();
-  User GetUser() const;
+  std::shared_ptr<DataBase> getDB();
+
+  User getUser() const;
 
 public slots:
   void onLoggedIn(const User& user);
@@ -34,7 +35,8 @@ public slots:
 
 private:
   void connectDB();
-  void getUsers();
+
+  void setUsers();
 
   Ui::StartScreen *ui;
 

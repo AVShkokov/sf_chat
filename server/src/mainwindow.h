@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QString>
 #include <QVector>
+#include <QSqlTableModel>
 
 #include "user.h"
 #include "message.h"
@@ -21,7 +22,7 @@ class MainWindow : public QMainWindow
   Q_OBJECT
 
 public:
-  explicit MainWindow(const User& user, std::shared_ptr<DataBase> database, QWidget *parent = nullptr);
+  MainWindow(const User& user, std::shared_ptr<DataBase> database, QWidget *parent = nullptr);
   ~MainWindow();
 
   static MainWindow* createClient();
@@ -33,9 +34,10 @@ private slots:
   void on_actionCommands_triggered();
 
 private:
+  void getStatus();
+  
   void getMessages();
   void loadHistory();
-  bool chatCommand(const QString& command) const;
   bool privateMessage(QString& text, QString& to);
 
   void showErrorMessage(const QString& message);
@@ -47,6 +49,8 @@ private:
   QVector<Message> m_messages;
 
   std::shared_ptr<DataBase> m_database;
+
+  QSqlTableModel model;
 
   const QString m_log_file_name = "log.txt";
   Logger* m_log = new Logger(m_log_file_name.toStdString());

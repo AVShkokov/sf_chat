@@ -1,5 +1,7 @@
-build
+client/build
+server/build
 .vs
 x64
 sf_chat.*
 *.user
+*.db
