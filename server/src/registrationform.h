@@ -1,5 +1,5 @@
-#ifndef LOGINFORM_H
-#define LOGINFORM_H
+#ifndef REGISTRATIONFORM_H
+#define REGISTRATIONFORM_H
 
 #include <QWidget>
 #include <QString>
@@ -11,32 +11,34 @@
 #include <memory>
 
 namespace Ui {
-  class LoginForm;
+  class RegistrationForm;
 }
 
-class LoginForm : public QWidget
+class RegistrationForm : public QWidget
 {
   Q_OBJECT
 
 public:
-  explicit LoginForm(QWidget *parent = nullptr);
-  ~LoginForm();
+  explicit RegistrationForm(QWidget *parent = nullptr);
+  ~RegistrationForm();
 
   void setDatabase(std::shared_ptr<DataBase> database);
   void setUsers(const QVector<User>& users);
 
 signals:
-  void registrationRequested();
+  void loginRequested();
   void accepted(const User& user);
   void rejected();
 
 private slots:
   void on_buttonBox_accepted();
   void on_buttonBox_rejected();
-  void on_singUpPushButton_clicked();
+  void on_singInPushButton_clicked();
 
 private:
-  Ui::LoginForm *ui;
+  void showErrorMessage(const QString& message);
+
+  Ui::RegistrationForm *ui;
 
   std::shared_ptr<DataBase> m_database;
 
@@ -44,4 +46,4 @@ private:
   QVector<User> m_users;
 };
 
-#endif // LOGINFORM_H
+#endif // REGISTRATIONFORM_H

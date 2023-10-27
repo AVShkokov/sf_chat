@@ -69,6 +69,8 @@ void RegistrationForm::on_buttonBox_accepted()
   m_database->QueryToDB("INSERT into users (name, login, password) VALUES ('" + name + "', '" + login + "', '" + password + "');");
   m_users.push_back(m_user);
 
+  m_user.SetOnlineStatus(1);
+
   emit accepted(m_user);
 }
 

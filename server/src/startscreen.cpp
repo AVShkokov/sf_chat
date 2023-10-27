@@ -10,9 +10,8 @@ StartScreen::StartScreen(QWidget *parent) :
   ui->setupUi(this);
 
   connectDB();
-  getUsers();
+  setUsers();
 
-  ui->loginPage->setDatabase(m_database);
   ui->loginPage->setUsers(m_users);
 
   ui->registrationPage->setDatabase(m_database);
@@ -32,9 +31,37 @@ StartScreen::~StartScreen()
   delete ui;
 }
 
-User StartScreen::GetUser() const
+std::shared_ptr<DataBase> StartScreen::getDB()
 {
-  return m_user;
+  return m_database;
+}
+
+void StartScreen::connectDB() {
+  QString message;
+  if (!m_database->ConnectToDB(message)) {
+      QMessageBox::critical(this,
+                            tr("Error"),
+                            tr(message.toStdString().c_str()));
+      return;
+    }
+}
+
+User StartScreen::getUser() const
+{
+    return m_user;
+}
+
+void StartScreen::setUsers(){
+  int step = 0;
+
+    QVector<QString> query = m_database->GetDataFromDB("SELECT id, name, login, password, ban_status, online_status FROM users;");
+  if (!query.empty()) {
+      while (step < query.size()) {
+          m_users.push_back(User(query[step + 1], query[step + 2], sha1(query[step + 3].toStdString()), query[step+4].toInt()));
+
+          step += 6;
+        }
+    }
 }
 
 void StartScreen::setLoginForm() const
@@ -47,11 +74,6 @@ void StartScreen::setRegistrationForm() const
   ui->stackedWidget->setCurrentIndex(1);
 }
 
-std::shared_ptr<DataBase> StartScreen::GetDB()
-{
-  return m_database;
-}
-
 void StartScreen::onLoggedIn(const User& user)
 {
   m_user = user;
@@ -62,29 +84,4 @@ void StartScreen::onLoggedIn(const User& user)
 void StartScreen::onRejectRequested()
 {
   reject();
-}
-
-
-
-void StartScreen::connectDB() {
-  QString message;
-  if (!m_database->ConnectToDB(message)) {
-      QMessageBox::critical(this,
-                            tr("Error"),
-                            tr(message.toStdString().c_str()));
-      return;
-    }
-}
-
-void StartScreen::getUsers(){
-  int step = 0;
-
-  QVector<QString> query = m_database->GetDataFromDB("SELECT id, name, login, password FROM users;");
-  if (!query.empty()) {
-      while (step < query.size()) {
-          m_users.push_back(User(query[step + 1], query[step + 2], sha1(query[step + 3].toStdString())));
-
-          step += 4;
-        }
-    }
 }

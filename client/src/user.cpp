@@ -22,6 +22,26 @@ const Hash& User::GetPassword() const {
   return m_password;
 }
 
+int User::GetOnlineStatus() const
+{
+  return m_online_status;
+}
+
+void User::SetOnlineStatus(const int& online_status)
+{
+  m_online_status = online_status;
+}
+
+int User::GetBanStatus() const
+{
+  return m_ban_status;
+}
+
+void User::SetBanStatus(const int& ban_status)
+{
+  m_ban_status = ban_status;
+}
+
 void User::SetPassword(const Hash& password) {
   m_password = password;
 }
